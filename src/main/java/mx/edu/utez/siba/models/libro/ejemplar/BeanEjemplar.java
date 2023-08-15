@@ -5,7 +5,7 @@ import mx.edu.utez.siba.models.libro.BeanLibro;
 public class BeanEjemplar {
     private Long id_ejemplar;
     private String observaciones;
-    private BeanLibro id_libro;
+    private BeanLibro libro;
 
     public BeanEjemplar() {
     }
@@ -13,7 +13,7 @@ public class BeanEjemplar {
     public BeanEjemplar(Long id_ejemplar, String observaciones, BeanLibro id_libro) {
         this.id_ejemplar = id_ejemplar;
         this.observaciones = observaciones;
-        this.id_libro = id_libro;
+        this.libro = id_libro;
     }
 
     public Long getId_ejemplar() {
@@ -32,11 +32,9 @@ public class BeanEjemplar {
         this.observaciones = observaciones;
     }
 
-    public BeanLibro getId_libro() {
-        return id_libro;
-    }
+    public BeanLibro getLibro() {return libro;}
 
-    public void setId_libro(BeanLibro id_libro) {
-        this.id_libro = id_libro;
+    public void setLibro(BeanLibro libro) {
+        this.libro = libro;
     }
 }
