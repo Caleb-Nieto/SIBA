@@ -82,7 +82,7 @@
               </form>
             </c:if>
             <c:if test="${not empty autor.libros}">
-              <p class="text-secondary fw-bold">En uso</p>
+              <p class="text-success fw-bold">En uso</p>
             </c:if>
           </td>
         </tr>

@@ -1,8 +1,8 @@
 package mx.edu.utez.siba.models.libro.autor;
 
 import mx.edu.utez.siba.models.libro.BeanLibro;
+import mx.edu.utez.siba.models.libro.DaoLibro;
 import mx.edu.utez.siba.models.repository.DaoRepository;
-import mx.edu.utez.siba.models.sala.BeanSala;
 import mx.edu.utez.siba.models.sala.DaoSala;
 import mx.edu.utez.siba.utils.MySQLConnection;
 
@@ -236,7 +236,7 @@ public class DaoAutor implements DaoRepository<BeanAutor> {
     }
 
     public void close(){
-        try {
+        try{
             if (conn != null) conn.close();
             if (cstm != null) cstm.close();
             if (rs != null) rs.close();
@@ -244,6 +244,41 @@ public class DaoAutor implements DaoRepository<BeanAutor> {
             Logger.getLogger(DaoSala.class.getName())
                     .log(Level.SEVERE, "Error closeConnection" + e.getMessage());
         }
+    }
+
+
+    //Mostrar autores por libro, solo para CRUD de libros
+    public List<BeanAutor> autores(Long id_libro) {
+        List<BeanAutor> autores = new ArrayList<>();
+
+        try {
+            conn = new MySQLConnection().getConnection();
+            String query = "call autores(?)";
+            cstm = conn.prepareCall(query);
+            if(id_libro == null){
+                cstm.setNull(1, Types.INTEGER);
+            }else{
+                cstm.setLong(1, id_libro);
+            }
+            cstm.execute();
+            rs = cstm.getResultSet();
+
+            while (rs.next()) {
+                BeanAutor autor = new BeanAutor();
+                autor.setId_autor(rs.getLong("id_autor"));
+                autor.setNombre(rs.getString("nombre"));
+                autor.setApellido_materno(rs.getString("apellido_materno"));
+                autor.setApellido_paterno(rs.getString("apellido_paterno"));
+
+                autores.add(autor);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(DaoLibro.class.getName())
+                    .log(Level.SEVERE, "Error FindAutores" + e.getMessage());
+        } finally {
+            close();
+        }
+        return autores;
     }
 
 }

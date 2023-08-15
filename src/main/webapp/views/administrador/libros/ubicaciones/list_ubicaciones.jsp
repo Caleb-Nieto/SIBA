@@ -42,7 +42,6 @@
         <table class="table bg-white text-center">
             <thead>
             <tr class="table-success">
-                <th scope="col">#</th>
                 <th scope="col">Pasillo</th>
                 <th scope="col">Sección</th>
                 <th scope="col">Estante</th>

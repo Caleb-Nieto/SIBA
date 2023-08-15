@@ -95,7 +95,7 @@
                                             </div>
                                         <div class="row mt-2">
                                             <c:if test="${libro.ejemplares > 1}">
-                                                <form method="get" action="...">
+                                                <form method="get" action="/libro/libro-view-update">
                                                     <input hidden value="${libro.id}" name="id_libro"/>
                                                     <div class="d-grid gap-1 mx-auto">
                                                         <button type="submit" class="btn btn-secondary btn-sm">

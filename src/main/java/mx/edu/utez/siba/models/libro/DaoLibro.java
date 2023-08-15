@@ -2,6 +2,7 @@ package mx.edu.utez.siba.models.libro;
 
 
 import mx.edu.utez.siba.models.libro.autor.BeanAutor;
+import mx.edu.utez.siba.models.libro.autor.DaoAutor;
 import mx.edu.utez.siba.models.libro.ejemplar.BeanEjemplar;
 import mx.edu.utez.siba.models.libro.ubicacion.BeanUbicacion;
 import mx.edu.utez.siba.models.sala.DaoSala;
@@ -61,75 +62,11 @@ public class DaoLibro{
 
 
         for(BeanLibro libro: libros){
-            List<BeanAutor> autores = autores(libro.getId());
+            List<BeanAutor> autores = new DaoAutor().autores(libro.getId());
             libro.setAutores(autores);
         }
 
         return libros;
-    }
-
-
-    //Mostrar autores por libro, solo para CRUD de libros
-    public List<BeanAutor> autores(Long id_libro) {
-        List<BeanAutor> autores = new ArrayList<>();
-
-        try {
-            conn = new MySQLConnection().getConnection();
-            String query = "call autores(?)";
-            cstm = conn.prepareCall(query);
-            if(id_libro == null){
-                cstm.setNull(1, Types.INTEGER);
-            }else{
-                cstm.setLong(1, id_libro);
-            }
-            cstm.execute();
-            rs = cstm.getResultSet();
-
-            while (rs.next()) {
-                BeanAutor autor = new BeanAutor();
-                autor.setId_autor(rs.getLong("id_autor"));
-                autor.setNombre(rs.getString("nombre"));
-                autor.setApellido_materno(rs.getString("apellido_materno"));
-                autor.setApellido_paterno(rs.getString("apellido_paterno"));
-
-                autores.add(autor);
-            }
-        } catch (SQLException e) {
-            Logger.getLogger(DaoLibro.class.getName())
-                    .log(Level.SEVERE, "Error FindAutores" + e.getMessage());
-        } finally {
-            close();
-        }
-        return autores;
-    }
-
-    public  List<BeanUbicacion> ubicaciones(){
-        List<BeanUbicacion> ubicaciones = new ArrayList<>();
-        try{
-            conn = new MySQLConnection().getConnection();
-            String query = "call ubicaciones();";
-            cstm = conn.prepareCall(query);
-            cstm.execute();
-
-            rs = cstm.getResultSet();
-
-            while(rs.next()){
-                BeanUbicacion ubicacion = new BeanUbicacion();
-
-                ubicacion.setId(rs.getLong("id"));
-                ubicacion.setPasillo(rs.getInt("pasillo"));
-                ubicacion.setSeccion(rs.getInt("seccion"));
-                ubicacion.setEstante(rs.getString("estante"));
-
-                ubicaciones.add(ubicacion);
-            }
-
-        }catch (SQLException e){
-            Logger.getLogger(DaoLibro.class.getName())
-                    .log(Level.SEVERE, "Error save " + e.getMessage());
-        }
-
-        return ubicaciones;
     }
 
     public int count(){
@@ -153,7 +90,42 @@ public class DaoLibro{
     }
 
     public BeanLibro findOne(Long id){
-       return null;
+        BeanLibro libro = new BeanLibro();
+        try{
+            conn = new MySQLConnection().getConnection();
+            String query = "call get_libro(?)";
+            cstm = conn.prepareCall(query);
+            cstm.setLong(1, id);
+            cstm.execute();
+            rs = cstm.getResultSet();
+
+            if (rs.next()){
+                libro.setId(rs.getLong("id"));
+                libro.setTitulo(rs.getString("titulo"));
+                libro.setEditorial(rs.getString("editorial"));
+                libro.setIsbn(rs.getString("isbn"));
+                libro.setEjemplares(rs.getInt("ejemplares"));
+
+                BeanUbicacion ubicacion = new BeanUbicacion();
+                ubicacion.setPasillo(rs.getInt("pasillo"));
+                ubicacion.setSeccion(rs.getInt("seccion"));
+                ubicacion.setEstante(rs.getString("estante"));
+
+                libro.setUbicacion(ubicacion);
+
+            }
+
+        }catch(SQLException e){
+            Logger.getLogger(DaoSala.class.getName())
+                    .log(Level.SEVERE, "Error findOne" + e.getSQLState());
+        }finally{
+            close();
+        }
+
+        List<BeanAutor> autores = new DaoAutor().autores(libro.getId());
+        libro.setAutores(autores);
+
+        return libro;
     }
 
     public String  save(BeanLibro libro, BeanEjemplar ejemplar, String autoreIds){

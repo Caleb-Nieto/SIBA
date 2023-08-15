@@ -1,5 +1,6 @@
 package mx.edu.utez.siba.models.libro.ubicacion;
 
+import mx.edu.utez.siba.models.libro.DaoLibro;
 import mx.edu.utez.siba.models.repository.DaoRepository;
 import mx.edu.utez.siba.models.sala.DaoSala;
 import mx.edu.utez.siba.utils.MySQLConnection;
@@ -208,6 +209,35 @@ public class DaoUbicacion implements DaoRepository<BeanUbicacion> {
             Logger.getLogger(DaoSala.class.getName())
                     .log(Level.SEVERE, "Error closeConnection" + e.getMessage());
         }
+    }
+
+    public  List<BeanUbicacion> ubicaciones(){
+        List<BeanUbicacion> ubicaciones = new ArrayList<>();
+        try{
+            conn = new MySQLConnection().getConnection();
+            String query = "call ubicaciones();";
+            cstm = conn.prepareCall(query);
+            cstm.execute();
+
+            rs = cstm.getResultSet();
+
+            while(rs.next()){
+                BeanUbicacion ubicacion = new BeanUbicacion();
+
+                ubicacion.setId(rs.getLong("id"));
+                ubicacion.setPasillo(rs.getInt("pasillo"));
+                ubicacion.setSeccion(rs.getInt("seccion"));
+                ubicacion.setEstante(rs.getString("estante"));
+
+                ubicaciones.add(ubicacion);
+            }
+
+        }catch (SQLException e){
+            Logger.getLogger(DaoLibro.class.getName())
+                    .log(Level.SEVERE, "Error save " + e.getMessage());
+        }
+
+        return ubicaciones;
     }
 
 }

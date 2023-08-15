@@ -12,7 +12,7 @@ import mx.edu.utez.siba.models.libro.autor.BeanAutor;
 import mx.edu.utez.siba.models.libro.autor.DaoAutor;
 import mx.edu.utez.siba.models.libro.ejemplar.BeanEjemplar;
 import mx.edu.utez.siba.models.libro.ubicacion.BeanUbicacion;
-
+import mx.edu.utez.siba.models.libro.ubicacion.DaoUbicacion;
 
 
 import java.io.File;
@@ -27,7 +27,8 @@ import java.util.UUID;
 
 @WebServlet(name="Libros", urlPatterns = {
         "/libro/libros", "/libro/save",
-        "/libro/libro_view", "/libro/delete"
+        "/libro/libro_view", "/libro/delete",
+        "/libro/update", "/libro/libro-view-update"
 
 
 })
@@ -41,8 +42,13 @@ public class ServletLibros extends HttpServlet {
     private String redirect;
     private List<BeanLibro> libros;
     private BeanLibro libro;
+    private BeanEjemplar ejemplar;
+    private BeanUbicacion ubicacion;
+    private String[] autores_ids;
     private String fileName, mime, id_libro;
     private String mensaje;
+    private StringBuilder idsBuilder;
+    private String ids;
     private String directory = "F:" + File.separator + "integradora/siba";
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -69,12 +75,23 @@ public class ServletLibros extends HttpServlet {
                 redirect= "/views/administrador/libros/list_libros.jsp";
                 break;
             case "/libro/libro_view":
-                List<BeanAutor> autores = new DaoLibro().autores(null);
-                List<BeanUbicacion> ubicaciones = new DaoLibro().ubicaciones();
+                List<BeanAutor> autores = new DaoAutor().autores(null);
+                List<BeanUbicacion> ubicaciones = new DaoUbicacion().ubicaciones();
 
                 request.setAttribute("autores", autores);
                 request.setAttribute("ubicaciones", ubicaciones);
                 redirect = "/views/administrador/libros/agregar_libro.jsp";
+                break;
+            case "/libro/libro-view-update":
+                id_libro = request.getParameter("id_libro");
+
+                libro = new DaoLibro().findOne(Long.parseLong(id_libro));
+                if (id_libro != null){
+                    request.setAttribute("libro", id_libro);
+                    redirect = "/views/administrador/libros/editar_libro.jsp";
+                } else{
+                    redirect = "/libro/libros?result=false&message=¡Error! Acción no realizada correctamente";
+                }
                 break;
         }
         request.getRequestDispatcher(redirect).forward(request, response);
@@ -103,32 +120,89 @@ public class ServletLibros extends HttpServlet {
                     }
                 }
 
-                libro.setTitulo(request.getParameter("titulo"));
-                libro.setIsbn(request.getParameter("isbn"));
-                libro.setEditorial(request.getParameter("editorial"));
+                libro.setTitulo(request.getParameter("titulo").trim());
+                libro.setIsbn(request.getParameter("isbn").trim());
+                libro.setEditorial(request.getParameter("editorial").trim());
 
-                BeanEjemplar ejemplar = new BeanEjemplar();
-                ejemplar.setId_ejemplar(Long.parseLong(request.getParameter("id_ejemplar")));
-                ejemplar.setObservaciones(request.getParameter("observaciones"));
+                ejemplar = new BeanEjemplar();
+                ejemplar.setId_ejemplar(Long.parseLong(request.getParameter("id_ejemplar").trim()));
+                ejemplar.setObservaciones(request.getParameter("observaciones").trim());
 
 
-                BeanUbicacion ubicacion = new BeanUbicacion();
+                ubicacion = new BeanUbicacion();
                 ubicacion.setId(Long.parseLong(request.getParameter("ubicacion_id")));
 
                 libro.setUbicacion(ubicacion);
 
 
-                String[] arr = request.getParameterValues("autores_ids");
-                StringBuilder idsBuilder = new StringBuilder();
+                autores_ids = request.getParameterValues("autores_ids");
+                idsBuilder = new StringBuilder();
 
-                for (int i = 0; i < arr.length; i++) {
-                    idsBuilder.append(arr[i]);
-                    if (i < arr.length - 1) {
+                for (int i = 0; i < autores_ids.length; i++) {
+                    idsBuilder.append(autores_ids[i]);
+                    if (i < autores_ids.length - 1) {
                         idsBuilder.append(",");
                     }
                 }
 
-                String ids = idsBuilder.toString();
+                ids = idsBuilder.toString();
+
+
+                mensaje = new DaoLibro().save(libro, ejemplar, ids);
+
+                if(mensaje.contains("correctamente")){
+                    redirect = "/libro/libros?result=true&message=" + URLEncoder
+                            .encode(mensaje,
+                                    StandardCharsets.UTF_8);
+                }else{
+                    redirect = "/libro/libro_view?result=false&message=" + URLEncoder
+                            .encode(mensaje,
+                                    StandardCharsets.UTF_8);
+                }
+                break;
+            case "/libro/update":
+                libro = new BeanLibro();
+
+                for (Part part : request.getParts()) {
+                    fileName = part.getSubmittedFileName();
+                    if (fileName != null) {
+                        mime = part.getContentType().split("/")[1];
+                        String uid = UUID.randomUUID().toString();
+                        libro.setFileName(uid + "." + mime);
+                        //part.write(directory + File.separator + uid + "." + mime);
+                        InputStream stream = part.getInputStream();
+                        byte[] arr = stream.readAllBytes();
+                        libro.setFile(arr);
+                    }
+                }
+
+                libro.setId(Long.parseLong(request.getParameter("id_libro").trim()));
+
+                libro.setTitulo(request.getParameter("titulo").trim());
+                libro.setEditorial(request.getParameter("editorial").trim());
+
+                ejemplar = new BeanEjemplar();
+                ejemplar.setId_ejemplar(Long.parseLong(request.getParameter("id_ejemplar").trim()));
+                ejemplar.setObservaciones(request.getParameter("observaciones").trim());
+
+
+                ubicacion = new BeanUbicacion();
+                ubicacion.setId(Long.parseLong(request.getParameter("ubicacion_id")));
+
+                libro.setUbicacion(ubicacion);
+
+
+                autores_ids = request.getParameterValues("autores_ids");
+                idsBuilder = new StringBuilder();
+
+                for (int i = 0; i < autores_ids.length; i++) {
+                    idsBuilder.append(autores_ids[i]);
+                    if (i < autores_ids.length - 1) {
+                        idsBuilder.append(",");
+                    }
+                }
+
+                ids = idsBuilder.toString();
 
 
                 mensaje = new DaoLibro().save(libro, ejemplar, ids);

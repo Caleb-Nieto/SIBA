@@ -1,4 +1,4 @@
-/*package mx.edu.utez.siba.utils;
+package mx.edu.utez.siba.utils;
 
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
@@ -46,5 +46,3 @@ public class RequestFilter implements Filter {
 
     }
 }
-
- */
