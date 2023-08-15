@@ -3,12 +3,11 @@
 <html lang="en">
 <head>
   <title>Inicio de sesión</title>
-  <jsp:include page="${pageContext.request.contextPath}/layouts/header.jsp"/>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/Indexstyle.css">
 </head>
 <body id="index">
 <div class="container">
-  <div class="row " style="margin-top: 80px;">
+  <div class="row">
     <main class="form-signin w-100 m-auto">
       <form id="login-form" action="/login" class="needs-validation" novalidate method="post">
         <div class="col text-center">
@@ -18,23 +17,21 @@
         </div> <br>
         <h1 class="h3 mb-3 fw-normal text-center" id="title">SIBA Login</h1>
         <div class="form-floating">
-          <input type="email" class="form-control" id="floatingInput" name="correo" pattern=".+@utez\.edu\.mx$" placeholder="name@example.com" size="35" required>
-          <label for="floatingInput">Correo electrónico</label>
+          <input type="email" class="form-control" id="correo" name="correo" pattern=".+@utez\.edu\.mx$" placeholder="name@example.com" size="35" required>
+          <label for="correo">Correo electrónico</label>
           <div id="feedbacke" class="invalid-feedback text-start" style="font-size: medium;">Ingresa un correo institucional válido</div>
         </div>
         <div class="form-floating">
-          <input type="password" class="form-control" id="floatingPassword" name="contrasenia" placeholder="Contraseña" required>
-          <label for="floatingPassword">Contraseña</label>
+          <input type="password" class="form-control" id="contrasenia" name="contrasenia" placeholder="Contraseña" required>
+          <label for="contrasenia">Contraseña</label>
           <div id="feedbackp" class="invalid-feedback text-start" style="font-size: medium;">Ingresa tu contraseña</div>
         </div>
-        <button id="login" class="btn btn-success w-100 py-2" type="submit">Iniciar sesión</button>
-        <p class="mt-4 mb-3 text-body-secondary text-center">SIBA | 3°D Desarrollo de Software</p>
+        <label class="label small"><a href="...">¿No tienes cuenta? Regístrate aquí</a></label>
+        <button id="login" class="btn btn-success w-100 py-2 mt-2" type="submit">Iniciar sesión</button>
       </form>
     </main>
   </div>
 </div>
-<jsp:include page="./layouts/footer.jsp"/>
-
 <script>
   window.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("login-form");
