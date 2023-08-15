@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebContextManager">
+    <option name="state">
+      <map>
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/index.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/layouts/header.jsp" value="file://$PROJECT_DIR$/src/main/webapp/layouts" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/layouts/navbar.jsp" value="file://$PROJECT_DIR$/src/main/webapp/layouts" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/views/administrador/salas/agregar_sala.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/administrador/salas" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/views/administrador/salas/list_salas.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/administrador/salas" />
+      </map>
+    </option>
+  </component>
+</project>
