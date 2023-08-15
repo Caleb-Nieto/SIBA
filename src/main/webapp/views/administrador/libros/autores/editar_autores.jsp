@@ -43,9 +43,9 @@
                         <div class="row">
                             <div class="col text-center">
                                 <a href="/autor/autores" class="btn btn-outline-danger mr-2">
-                                    CANCELAR
+                                    Cancelar
                                 </a>
-                                <button id="enviar" type="submit" class="btn btn-primary mr-2">ACTUALIZAR</button>
+                                <button id="enviar" type="submit" class="btn btn-primary mr-2">Actualizar</button>
                             </div>
                         </div>
                     </div>

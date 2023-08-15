@@ -104,9 +104,9 @@ public class DaoLibro{
                 libro.setTitulo(rs.getString("titulo"));
                 libro.setEditorial(rs.getString("editorial"));
                 libro.setIsbn(rs.getString("isbn"));
-                libro.setEjemplares(rs.getInt("ejemplares"));
 
                 BeanUbicacion ubicacion = new BeanUbicacion();
+                ubicacion.setId(rs.getLong("id_ub"));
                 ubicacion.setPasillo(rs.getInt("pasillo"));
                 ubicacion.setSeccion(rs.getInt("seccion"));
                 ubicacion.setEstante(rs.getString("estante"));
@@ -166,8 +166,87 @@ public class DaoLibro{
         return mensaje;
     }
 
-    public String update(BeanLibro libro){
-        return null;
+    public String update(BeanLibro libro, BeanEjemplar ejemplar){
+        String mensaje = "algo falla";
+        try{
+            conn = new MySQLConnection().getConnection();
+            String query = "call actualizar_libro(?, ?, ?, ?, ?, ?, ?, ?);";
+            cstm = conn.prepareCall(query);
+            cstm.setLong(1, libro.getId());
+            cstm.setString(2, libro.getTitulo());
+            cstm.setString(3, libro.getEditorial());
+            cstm.setLong(4, libro.getUbicacion().getId());
+
+            cstm.setString(5, ejemplar.getObservaciones());
+
+            if(libro.getFile() != null && libro.getFileName().isEmpty()){
+                cstm.setString(6, libro.getFileName());
+                cstm.setBytes(7, libro.getFile());
+            }else{
+                cstm.setNull(6, Types.VARCHAR);
+                cstm.setNull(7, Types.BLOB);
+            }
+
+
+            cstm.registerOutParameter(8, Types.VARCHAR);
+            cstm.execute();
+
+
+            mensaje = cstm.getString(8);
+
+
+        }catch (SQLException e){
+            Logger.getLogger(DaoLibro.class.getName())
+                    .log(Level.SEVERE, "Error Update " + e.getMessage());
+        }finally {
+            close();
+        }
+        return mensaje;
+    }
+
+    public List<BeanLibro> search(String palabra){
+        List<BeanLibro> libros = new ArrayList<>();
+        try {
+            conn = new MySQLConnection().getConnection();
+            String query = "call buscar_libros(?);";
+            cstm = conn.prepareCall(query);
+            cstm.setString(1, palabra);
+            cstm.execute();
+            rs = cstm.getResultSet();
+
+            while (rs.next()) {
+                BeanLibro libro = new BeanLibro();
+                libro.setId(rs.getLong("id"));
+                libro.setTitulo(rs.getString("titulo"));
+                libro.setEditorial(rs.getString("editorial"));
+                libro.setIsbn(rs.getString("isbn"));
+                libro.setEjemplares(rs.getInt("ejemplares"));
+
+                BeanUbicacion ubicacion = new BeanUbicacion();
+                ubicacion.setPasillo(rs.getInt("pasillo"));
+                ubicacion.setSeccion(rs.getInt("seccion"));
+                ubicacion.setEstante(rs.getString("estante"));
+
+                libro.setUbicacion(ubicacion);
+
+
+
+                libros.add(libro);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(DaoLibro.class.getName())
+                    .log(Level.SEVERE, "Error search" + e.getSQLState());
+        } finally {
+            close();
+        }
+
+
+        for(BeanLibro libro: libros){
+            List<BeanAutor> autores = new DaoAutor().autores(libro.getId());
+            libro.setAutores(autores);
+        }
+
+        return libros;
     }
 
     public String delete(Long id){

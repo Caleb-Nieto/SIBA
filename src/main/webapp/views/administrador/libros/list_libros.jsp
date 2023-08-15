@@ -67,13 +67,16 @@
                                                 </c:otherwise>
                                             </c:choose>
                                         </h5>
-                                        <c:forEach items="${libro.autores}" var="autor">
-                                            <p class="card-text m-0">
-                                                <c:out value="${autor.nombre}"/>
-                                                <c:out value="${autor.apellido_paterno}"/>
-                                                <c:out value="${autor.apellido_materno}"/>
-                                            </p>
-                                        </c:forEach>
+                                        <div class="dropdown">
+                                            <button class="btn btn-light btn-sm dropdown-toggle col-12" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Autor(es)
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <c:forEach items="${libro.autores}" var="autor">
+                                                    <li><c:out value="${autor.nombre} ${autor.apellido_paterno} ${autor.apellido_materno}"/></li>
+                                                </c:forEach>
+                                            </ul>
+                                        </div>
                                         <p class="card-text">
                                             <small class="text-body-secondary">
                                                 <c:out value="Pasillo ${libro.ubicacion.pasillo}, seccion ${libro.ubicacion.seccion}, estante ${libro.ubicacion.estante}"/>
@@ -86,16 +89,19 @@
                                         </div>
                                             <div class="row mt-2">
                                                 <c:if test="${libro.ejemplares == 1}">
-                                                    <div class="d-grid gap-1 mx-auto">
-                                                        <button type="submit" class="btn btn-primary btn-sm">
-                                                            Editar
-                                                        </button>
-                                                    </div>
+                                                    <form method="get" action="/libro/libro-view-update">
+                                                        <input hidden value="${libro.id}" name="id_libro"/>
+                                                        <div class="d-grid gap-1 mx-auto">
+                                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                                Editar libro
+                                                            </button>
+                                                        </div>
+                                                    </form>
                                                 </c:if>
                                             </div>
                                         <div class="row mt-2">
                                             <c:if test="${libro.ejemplares > 1}">
-                                                <form method="get" action="/libro/libro-view-update">
+                                                <form method="get" action="...">
                                                     <input hidden value="${libro.id}" name="id_libro"/>
                                                     <div class="d-grid gap-1 mx-auto">
                                                         <button type="submit" class="btn btn-secondary btn-sm">

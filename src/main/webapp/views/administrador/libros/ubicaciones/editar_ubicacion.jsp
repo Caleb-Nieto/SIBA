@@ -12,7 +12,7 @@
 <div class="container-fluid">
     <div class="col align-middle">
         <div class="card position-absolute top-50 start-50 translate-middle" style="width: 20%">
-            <div class="card-header text-white text-center" style="background: rgb(0, 148, 117)"><h5>REGISTRAR UBICACIÓN</h5></div>
+            <div class="card-header text-white text-center bg-primary"><h5>ACTUALIZAR UBICACIÓN</h5></div>
             <div class="card-body">
                 <form id="ubi-form" class="needs-validation" novalidate action="/ubicacion/update" method="post">
                     <div class="form-group mb-3">
@@ -45,7 +45,7 @@
                                 <a href="/ubicacion/ubicaciones" class="btn btn-outline-danger mr-2">
                                     Cancelar
                                 </a>
-                                <button id="enviar" type="submit" class="btn btn-success mr-2 " style="background: rgb(0, 148, 117);">Aceptar</button>
+                                <button id="enviar" type="submit" class="btn btn-primary mr-2">Actualizar</button>
                             </div>
                         </div>
                     </div>
