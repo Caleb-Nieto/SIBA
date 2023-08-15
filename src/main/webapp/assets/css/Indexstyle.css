@@ -39,5 +39,19 @@ body {
 }
 
 #title{
+    font-size: xx-large;
+}
 
+a {
+    outline: none;
+    text-decoration: none;
+    padding: 2px 1px 0;
+}
+
+a:link {
+    color: #045c4a;
+}
+
+a:visited {
+    color: #049474;
 }
