@@ -11,7 +11,7 @@ import mx.edu.utez.siba.models.libro.DaoLibro;
 import java.io.*;
 
 @WebServlet(name="Files", urlPatterns = {
-        "/libro/loadfile"
+        "/api/libro/loadfile"
 })
 public class ServletFiles extends HttpServlet{
     private String action;
@@ -22,7 +22,7 @@ public class ServletFiles extends HttpServlet{
         req.setCharacterEncoding("UTF-8");
         action = req.getServletPath();
         switch (action) {
-            case "/libro/loadfile":
+            case "/api/libro/loadfile":
                 int id = Integer.parseInt(
                         req.getParameter("file") != null ?
                                 req.getParameter("file") : "0"

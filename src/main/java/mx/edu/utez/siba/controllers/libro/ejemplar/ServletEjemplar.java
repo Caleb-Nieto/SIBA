@@ -17,15 +17,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @WebServlet(name="ServletEjemplar", urlPatterns = {
-         "/ejemplar/ejemplar",
-        "/ejemplar/ejemplar-view" , "/ejemplar/save",
-        "/ejemplar/ejemplar-view-update", "/ejemplar/update",
-        "/ejemplar/delete", "/ejemplar/search"
+         "/api/ejemplar/ejemplares",
+        "/api/ejemplar/ejemplar-view-save" , "/api/ejemplar/save",
+        "/api/ejemplar/ejemplar-view-update", "/api/ejemplar/update",
+        "/api/ejemplar/delete", "/api/ejemplar/search"
 
 })
 public class ServletEjemplar extends HttpServlet {
     private String action;
-    private String redirect = "ejemplar/ejemplares/";
+    private String redirect;
     private String id_ejemplar, observaciones;
     private BeanLibro libro;
     private String mensaje;
@@ -38,7 +38,7 @@ public class ServletEjemplar extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         action = request.getServletPath();
         switch(action){
-            case "/ejemplar/ejemplares":
+            case "/api/ejemplar/ejemplares":
                 int pagina = 1;
                 int limite = 12;
                 if (request.getParameter("page") != null) {
@@ -67,7 +67,7 @@ public class ServletEjemplar extends HttpServlet {
         response.setContentType("text/html");
         action = request.getServletPath();
         switch (action){
-            case "/ejemplar/save":
+            case "/api/ejemplar/save":
                 id_ejemplar = request.getParameter("id_ejemplar");
                 observaciones = request.getParameter("observaciones");
 
@@ -79,10 +79,10 @@ public class ServletEjemplar extends HttpServlet {
                 if (mensaje.contains("correctamente")){
                     redirect = "/ejemplar/ejemplar-view?result=true&message="+ URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }else{
-                    redirect = "/ejemplar/ejemplar-view?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/ejemplar/ejemplar-view-save?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }
                 break;
-            case "/ejemplar/update":
+            case "/api/ejemplar/update":
                 id_ejemplar = request.getParameter("id_ejemplar");
                 observaciones = request.getParameter("observaciones");
 
@@ -92,19 +92,19 @@ public class ServletEjemplar extends HttpServlet {
                 ejemplar = new BeanEjemplar(Long.parseLong(id_ejemplar),observaciones, libro);
                 mensaje = new DaoEjemplar().update(ejemplar);
                 if (mensaje.contains("correctamente")){
-                    redirect = "/ejemplar/ejemplares?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/ejemplar/ejemplares?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }else{
-                    redirect = "/ejemplar/ejemplares?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/ejemplar/ejemplares?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }
 
                 break;
-            case "/ejemplar/delete":
+            case "/api/ejemplar/delete":
                 id_ejemplar = request.getParameter("id_ejemplar");
                 mensaje = new DaoEjemplar().delete(Long.parseLong(id_ejemplar));
                 if (mensaje.contains("correctamente")){
-                    redirect = "/ejemplar/ejemplares?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/ejemplar/ejemplares?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }else{
-                    redirect = "/ejemplar/ejemplares?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/ejemplar/ejemplares?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }
                 break;
         }

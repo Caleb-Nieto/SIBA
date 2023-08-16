@@ -14,7 +14,7 @@
         <div class="card position-absolute top-50 start-50 translate-middle" style="width: 20%">
             <div class="card-header text-white text-center" style="background: rgb(0, 148, 117)"><h5>REGISTRAR UBICACIÓN</h5></div>
             <div class="card-body">
-                <form id="ubi-form" class="needs-validation" novalidate action="/ubicacion/save" method="post">
+                <form id="ubi-form" class="needs-validation" novalidate action="/api/ubicacion/save" method="post">
                     <div class="form-group mb-3">
                         <label for="pasillo" class="fw-bold">Pasillo:</label>
                         <input type="number" name="pasillo" id="pasillo" class="form-control" required min="0"/>
@@ -41,7 +41,7 @@
                     <div class="form-group mb-3">
                         <div class="row">
                             <div class="col text-center">
-                                <a href="/ubicacion/ubicaciones" class="btn btn-outline-danger mr-2">
+                                <a href="/api/ubicacion/ubicaciones" class="btn btn-outline-danger mr-2">
                                     Cancelar
                                 </a>
                                 <button id="enviar" type="submit" class="btn btn-success mr-2 " style="background: rgb(0, 148, 117);">Aceptar</button>

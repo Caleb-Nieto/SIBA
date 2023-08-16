@@ -18,7 +18,7 @@
         <div class="col-12 mb-12 mt-12 mb-4">
             <div class="row">
                 <div class="col-10">
-                    <form action="/ubicacion/search" method="get">
+                    <form action="/api/ubicacion/search" method="get">
                         <div class="row">
                             <div class="col">
                                 <input type="search" class="form-control" placeholder="" name="palabra" id="palabra" maxlength="30">
@@ -30,7 +30,7 @@
                     </form>
                 </div>
                 <div class="col">
-                    <a href="/ubicacion/ubicacion-view" class="btn btn-success">Agregar ubicación</a>
+                    <a href="/api/ubicacion/ubicacion-view-save" class="btn btn-success">Agregar ubicación</a>
                 </div>
             </div>
         </div>
@@ -55,14 +55,14 @@
                     <td><c:out value="${ubicacion.seccion}"/></td>
                     <td><c:out value="${ubicacion.estante}"/></td>
                     <td class="d-grid d-md-flex justify-content-md-center">
-                        <form method="get" action="/ubicacion/ubicacion-view-update">
+                        <form method="get" action="/api/ubicacion/ubicacion-view-update">
                             <input hidden value="${ubicacion.id}" name="id"/>
                             <button type="submit" class="btn btn-primary btn-sm">
                                 Editar
                             </button>
                         </form>
                         &nbsp;
-                        <form class="deleteForm" method="post" action="/ubicacion/delete">
+                        <form class="deleteForm" method="post" action="/api/ubicacion/delete">
                             <input hidden value="${ubicacion.id}" name="id"/>
                             <button type="button" onclick="alerta(this)" class="btn btn-outline-danger btn-sm">
                                 Eliminar
@@ -88,22 +88,22 @@
         <div class="pagination d-flex mt-2 mb-2">
             <div class="btn-group" role="group" aria-label="Botones de paginación">
                 <c:if test="${paginaActual > 1}">
-                    <a href="/ubicacion/ubicaciones?page=${paginaActual - 1}" class="btn btn-light border-black"><< Anterior</a>
+                    <a href="/api/ubicacion/ubicaciones?page=${paginaActual - 1}" class="btn btn-light border-black"><< Anterior</a>
                 </c:if>
 
                 <c:forEach begin="1" end="${totalPaginas}" var="numeroPagina">
                     <c:choose>
                         <c:when test="${numeroPagina == paginaActual}">
-                            <a href="/ubicacion/ubicaciones?page=${numeroPagina}" class="btn btn-light active border-black">${numeroPagina}</a>
+                            <a href="/api/ubicacion/ubicaciones?page=${numeroPagina}" class="btn btn-light active border-black">${numeroPagina}</a>
                         </c:when>
                         <c:otherwise>
-                            <a href="/ubicacion/ubicaciones?page=${numeroPagina}" class="btn btn-light border-black">${numeroPagina}</a>
+                            <a href="/api/ubicacion/ubicaciones?page=${numeroPagina}" class="btn btn-light border-black">${numeroPagina}</a>
                         </c:otherwise>
                     </c:choose>
                 </c:forEach>
 
                 <c:if test="${paginaActual < totalPaginas}">
-                    <a href="/ubicacion/ubicaciones?page=${paginaActual + 1}" class="btn btn-light border-black">Siguiente >></a>
+                    <a href="/api/ubicacion/ubicaciones?page=${paginaActual + 1}" class="btn btn-light border-black">Siguiente >></a>
                 </c:if>
             </div>
         </div>

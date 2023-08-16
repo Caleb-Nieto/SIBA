@@ -18,7 +18,7 @@
     <div class="col-12 mb-12 mt-12 mb-4">
       <div class="row">
         <div class="col-10">
-          <form action="/autor/search" method="get">
+          <form action="/api/autor/search" method="get">
             <div class="row">
               <div class="col">
                 <input type="search" class="form-control" placeholder="Nombre" name="palabra" id="palabra" maxlength="30">
@@ -30,7 +30,7 @@
           </form>
         </div>
         <div class="col">
-          <a href="/autor/autor-view" class="btn btn-success">Agregar autor</a>
+          <a href="/api/autor/autor-view-save" class="btn btn-success">Agregar autor</a>
         </div>
       </div>
     </div>
@@ -67,14 +67,14 @@
           </td>
           <td class="d-grid d-md-flex justify-content-md-center">
             <c:if test="${empty autor.libros}">
-              <form method="get" action="/autor/autor-view-update">
+              <form method="get" action="/api/autor/autor-view-update">
                 <input hidden value="${autor.id_autor}" name="id_autor"/>
                 <button type="submit" class="btn btn-primary btn-sm">
                   Editar
                 </button>
               </form>
               &nbsp;
-              <form class="deleteForm" method="post" action="/autor/delete">
+              <form class="deleteForm" method="post" action="/api/autor/delete">
                 <input hidden value="${autor.id_autor}" name="id_autor"/>
                 <button type="button" onclick="alerta(this)" class="btn btn-outline-danger btn-sm">
                   Eliminar
@@ -104,22 +104,22 @@
     <div class="pagination d-flex mt-2 mb-2">
       <div class="btn-group" role="group" aria-label="Botones de paginación">
         <c:if test="${paginaActual > 1}">
-          <a href="/autor/autores?page=${paginaActual - 1}" class="btn btn-light border-black"><< Anterior</a>
+          <a href="/api/autor/autores?page=${paginaActual - 1}" class="btn btn-light border-black"><< Anterior</a>
         </c:if>
 
         <c:forEach begin="1" end="${totalPaginas}" var="numeroPagina">
           <c:choose>
             <c:when test="${numeroPagina == paginaActual}">
-              <a href="/autor/autores?page=${numeroPagina}" class="btn btn-light active border-black">${numeroPagina}</a>
+              <a href="/api/autor/autores?page=${numeroPagina}" class="btn btn-light active border-black">${numeroPagina}</a>
             </c:when>
             <c:otherwise>
-              <a href="/autor/autores?page=${numeroPagina}" class="btn btn-light border-black">${numeroPagina}</a>
+              <a href="/api/autor/autores?page=${numeroPagina}" class="btn btn-light border-black">${numeroPagina}</a>
             </c:otherwise>
           </c:choose>
         </c:forEach>
 
         <c:if test="${paginaActual < totalPaginas}">
-          <a href="/autor/autores?page=${paginaActual + 1}" class="btn btn-light border-black">Siguiente >></a>
+          <a href="/api/autor/autores?page=${paginaActual + 1}" class="btn btn-light border-black">Siguiente >></a>
         </c:if>
       </div>
     </div>

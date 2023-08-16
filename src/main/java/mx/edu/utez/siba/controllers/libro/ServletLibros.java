@@ -27,10 +27,10 @@ import java.util.UUID;
 
 
 @WebServlet(name="Libros", urlPatterns = {
-        "/libro/libros", "/libro/save",
-        "/libro/libro_view", "/libro/delete",
-        "/libro/update", "/libro/libro-view-update",
-        "/libro/search"
+        "/api/libro/libros", "/api/libro/save",
+        "/api/libro/libro-view-save", "/api/libro/delete",
+        "/api/libro/update", "/api/libro/libro-view-update",
+        "/api/libro/search"
 
 
 })
@@ -59,7 +59,7 @@ public class ServletLibros extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         action = request.getServletPath();
         switch(action){
-            case "/libro/libros":
+            case "/api/libro/libros":
                 int pagina = 1;
                 int limite = 12;
                 if (request.getParameter("page") != null) {
@@ -78,7 +78,7 @@ public class ServletLibros extends HttpServlet {
 
                 redirect= "/views/administrador/libros/list_libros.jsp";
                 break;
-            case "/libro/libro_view":
+            case "/api/libro/libro-view-save":
                 autores = new DaoAutor().autores(null);
                 ubicaciones = new DaoUbicacion().ubicaciones();
 
@@ -86,7 +86,7 @@ public class ServletLibros extends HttpServlet {
                 request.setAttribute("ubicaciones", ubicaciones);
                 redirect = "/views/administrador/libros/agregar_libro.jsp";
                 break;
-            case "/libro/libro-view-update":
+            case "/api/libro/libro-view-update":
                 id_libro = request.getParameter("id_libro");
 
                 ubicaciones = new DaoUbicacion().ubicaciones();
@@ -97,17 +97,17 @@ public class ServletLibros extends HttpServlet {
                     request.setAttribute("libro", libro);
                     redirect = "/views/administrador/libros/editar_libro.jsp";
                 } else{
-                    redirect = "/libro/libros?result=false&message=¡Error! Acción no realizada correctamente";
+                    redirect = "/api/libro/libros?result=false&message=¡Error! Acción no realizada correctamente";
                 }
                 break;
-            case "/libro/search":
+            case "/api/libro/search":
 
                 String palabra = request.getParameter("palabra").trim();
 
                 if(!palabra.isEmpty()){
                     libros = new DaoLibro().search(palabra);
                 }else{
-                    redirect = "/libro/libros";
+                    redirect = "/api/libro/libros";
                 }
 
                 request.setAttribute("libros", libros);
@@ -123,7 +123,7 @@ public class ServletLibros extends HttpServlet {
         response.setContentType("text/html");
         action = request.getServletPath();
         switch (action){
-            case "/libro/save":
+            case "/api/libro/save":
                 libro = new BeanLibro();
 
                 for (Part part : request.getParts()) {
@@ -170,16 +170,16 @@ public class ServletLibros extends HttpServlet {
                 mensaje = new DaoLibro().save(libro, ejemplar, ids);
 
                 if(mensaje.contains("correctamente")){
-                    redirect = "/libro/libros?result=true&message=" + URLEncoder
+                    redirect = "/api/libro/libros?result=true&message=" + URLEncoder
                             .encode(mensaje,
                                     StandardCharsets.UTF_8);
                 }else{
-                    redirect = "/libro/libro_view?result=false&message=" + URLEncoder
+                    redirect = "/api/libro/libro-view-save?result=false&message=" + URLEncoder
                             .encode(mensaje,
                                     StandardCharsets.UTF_8);
                 }
                 break;
-            case "/libro/update":
+            case "/api/libro/update":
                 libro = new BeanLibro();
 
                 for (Part part : request.getParts()) {
@@ -217,7 +217,7 @@ public class ServletLibros extends HttpServlet {
                 mensaje = new DaoLibro().update(libro, ejemplar);
 
                 if(mensaje.contains("correctamente")){
-                    redirect = "/libro/libros?result=true&message=" + URLEncoder
+                    redirect = "/api/libro/libros?result=true&message=" + URLEncoder
                             .encode(mensaje,
                                     StandardCharsets.UTF_8);
                 }else{
@@ -226,15 +226,15 @@ public class ServletLibros extends HttpServlet {
                                     StandardCharsets.UTF_8);
                 }
                 break;
-            case "/libro/delete":
+            case "/api/libro/delete":
                 id_libro = request.getParameter("id_libro");
 
 
                 mensaje = new DaoLibro().delete(Long.parseLong(id_libro));
                 if (mensaje.contains("correctamente")){
-                    redirect = "/libro/libros?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/libro/libros?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }else{
-                    redirect = "/libro/libros?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/libro/libros?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }
         }
         response.sendRedirect(request.getContextPath() + redirect);

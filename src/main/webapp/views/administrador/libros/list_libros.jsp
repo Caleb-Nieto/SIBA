@@ -17,7 +17,7 @@
                     <h3 class="text-white text-center">LIBROS</h3>
                 </div>
                 <div class="col-10">
-                    <form action="/libro/search" method="get">
+                    <form action="/api/libro/search" method="get">
                         <div class="row">
                             <div class="col">
                                 <input type="search" class="form-control" name="palabra" id="palabra" maxlength="30">
@@ -29,7 +29,7 @@
                     </form>
                 </div>
                 <div class="col">
-                    <a href="/libro/libro_view" class="btn btn-success">Agregar Libro</a>
+                    <a href="/api/libro/libro-view-save" class="btn btn-success">Agregar Libro</a>
                 </div>
             </div>
         </div>
@@ -52,7 +52,7 @@
                         <div class="card mb-3 text-center" style="width: 500px; height: 350px;">
                             <div class="row g-0">
                                 <div class="col-md-5">
-                                    <img src="/libro/loadfile?file=${libro.id}" class="img-fluid rounded-start" style="height: 350px;" alt="${libro.titulo}">
+                                    <img src="/api/libro/loadfile?file=${libro.id}" class="img-fluid rounded-start" style="height: 350px;" alt="${libro.titulo}">
                                 </div>
                                 <div class="col-md-7">
                                     <div class="card-body">
@@ -83,13 +83,18 @@
                                             </small>
                                         </p>
                                         <div class="row">
-                                            <div class="d-grid gap-1 mx-auto">
-                                                <a href="..." class="btn btn-success btn-sm">Agregar Ejemplar</a>
-                                            </div>
+                                            <form method="get" action="/api/autor/autor-view-save">
+                                                <input hidden value="${libro.id}" name="id_libro"/>
+                                                <div class="d-grid gap-1 mx-auto">
+                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                        Agregar ejemplar
+                                                    </button>
+                                                </div>
+                                            </form>
                                         </div>
                                             <div class="row mt-2">
                                                 <c:if test="${libro.ejemplares == 1}">
-                                                    <form method="get" action="/libro/libro-view-update">
+                                                    <form method="get" action="/api/libro/libro-view-update">
                                                         <input hidden value="${libro.id}" name="id_libro"/>
                                                         <div class="d-grid gap-1 mx-auto">
                                                             <button type="submit" class="btn btn-primary btn-sm">
@@ -101,7 +106,7 @@
                                             </div>
                                         <div class="row mt-2">
                                             <c:if test="${libro.ejemplares > 1}">
-                                                <form method="get" action="...">
+                                                <form method="get" action="/api/ejemplar/ejemplares">
                                                     <input hidden value="${libro.id}" name="id_libro"/>
                                                     <div class="d-grid gap-1 mx-auto">
                                                         <button type="submit" class="btn btn-secondary btn-sm">
@@ -111,7 +116,7 @@
                                                 </form>
                                             </c:if>
                                             <c:if test="${libro.ejemplares == 1}">
-                                                <form class="deleteForm" method="post" action="/libro/delete">
+                                                <form class="deleteForm" method="post" action="/api/libro/delete">
                                                     <input hidden value="${libro.id}" name="id_libro"/>
                                                     <div class="d-grid gap-1 mx-auto">
                                                         <button type="button" onclick="alerta(this)" class="btn btn-outline-danger btn-sm">
@@ -132,22 +137,22 @@
                 <div class="pagination d-flex mt-2 mb-2">
                     <div class="btn-group" role="group" aria-label="Botones de paginación">
                         <c:if test="${paginaActual > 1}">
-                            <a href="/libro/libros?page=${paginaActual - 1}" class="btn btn-light border-black"><< Anterior</a>
+                            <a href="/api/libro/libros?page=${paginaActual - 1}" class="btn btn-light border-black"><< Anterior</a>
                         </c:if>
 
                         <c:forEach begin="1" end="${totalPaginas}" var="numeroPagina">
                             <c:choose>
                                 <c:when test="${numeroPagina == paginaActual}">
-                                    <a href="/libro/libros?page=${numeroPagina}" class="btn btn-light active border-black">${numeroPagina}</a>
+                                    <a href="/api/libro/libros?page=${numeroPagina}" class="btn btn-light active border-black">${numeroPagina}</a>
                                 </c:when>
                                 <c:otherwise>
-                                    <a href="/libro/libros?page=${numeroPagina}" class="btn btn-light border-black">${numeroPagina}</a>
+                                    <a href="/api/libro/libros?page=${numeroPagina}" class="btn btn-light border-black">${numeroPagina}</a>
                                 </c:otherwise>
                             </c:choose>
                         </c:forEach>
 
                         <c:if test="${paginaActual < totalPaginas}">
-                            <a href="/libro/libros?page=${paginaActual + 1}" class="btn btn-light border-black">Siguiente >></a>
+                            <a href="/api/libro/libros?page=${paginaActual + 1}" class="btn btn-light border-black">Siguiente >></a>
                         </c:if>
                     </div>
                 </div>

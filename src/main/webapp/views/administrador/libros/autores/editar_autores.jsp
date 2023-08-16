@@ -14,7 +14,7 @@
         <div class="card position-absolute top-50 start-50 translate-middle" style="width: 30%">
             <div class="card-header text-white text-center bg-primary"><h5>ACTUALIZAR AUTOR</h5></div>
             <div class="card-body">
-                <form id="autor-add-form" class="needs-validation" novalidate action="/autor/update" method="post">
+                <form id="autor-add-form" class="needs-validation" novalidate action="/api/autor/update" method="post">
                     <input hidden name="id_autor" value="${autor.id_autor}"/>
                     <div class="form-group mb-3">
                         <label for="nombre" class="fw-bold">Nombre:</label>
@@ -42,7 +42,7 @@
                     <div class="form-group mb-3">
                         <div class="row">
                             <div class="col text-center">
-                                <a href="/autor/autores" class="btn btn-outline-danger mr-2">
+                                <a href="/api/autor/autores" class="btn btn-outline-danger mr-2">
                                     Cancelar
                                 </a>
                                 <button id="enviar" type="submit" class="btn btn-primary mr-2">Actualizar</button>

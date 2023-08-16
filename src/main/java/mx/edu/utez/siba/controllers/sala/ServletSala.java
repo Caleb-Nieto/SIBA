@@ -10,18 +10,16 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @WebServlet(name = "ServletSala", urlPatterns = {
-        "/sala/salas", "/sala/sala",
-        "/sala/sala-view" , "/sala/save",
-        "/sala/sala-view-update", "/sala/update",
-        "/sala/delete", "/sala/search"
+        "/api/sala/salas", "/api/sala/sala-view-save",
+        "/api/sala/save", "/api/sala/sala-view-update",
+        "/api/sala/update", "/api/sala/delete",
+        "/api/sala/search"
 })
 public class ServletSala extends HttpServlet {
     private String action;
-    private String redirect = "/sala/salas";
+    private String redirect;
     private String id_sala, nombre, capacidad, descripcion;
     private String mensaje;
     private BeanSala sala;
@@ -31,7 +29,7 @@ public class ServletSala extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         action = request.getServletPath();
         switch(action){
-            case "/sala/salas":
+            case "/api/sala/salas":
                 int pagina = 1;
                 int limite = 12;
                 if (request.getParameter("page") != null) {
@@ -50,22 +48,33 @@ public class ServletSala extends HttpServlet {
 
                 redirect= "/views/administrador/salas/list_salas.jsp";
                 break;
-            case "/sala/sala-view":
+            case "/api/sala/sala-view-save":
+
+
                 redirect = "/views/administrador/salas/agregar_sala.jsp";
+
                 break;
-            case "/sala/sala-view-update":
+            case "/api/sala/sala-view-update":
+
+                sala = new BeanSala();
+
+
                 id_sala = request.getParameter("id_sala");
                 sala = new DaoSala().findOne(Long.parseLong(id_sala));
                 if (sala != null){
                     request.setAttribute("sala", sala);
                     redirect = "/views/administrador/salas/editar_sala.jsp";
                 } else{
-                    redirect = "/sala/salas?result=false&message=¡Error! Acción no realizada correctamente";
+                    redirect = "/api/sala/salas?result=false&message=¡Error! Acción no realizada correctamente";
                 }
                 break;
-                case "/sala/search":
+                case "/api/sala/search":
                     String palabra = request.getParameter("palabra").trim();
                     String num = request.getParameter("capacidad").trim();
+
+                    if(palabra.isEmpty() && num.isEmpty()){
+                        redirect = "/api/sala/salas";
+                    }
 
                     if(palabra.isEmpty()){
                         salas = new DaoSala().search(null, num);
@@ -89,19 +98,19 @@ public class ServletSala extends HttpServlet {
         response.setContentType("text/html");
         action = request.getServletPath();
         switch (action){
-            case "/sala/save":
+            case "/api/sala/save":
                 nombre = request.getParameter("nombre").trim();
                 capacidad = request.getParameter("capacidad").trim();
                 descripcion = request.getParameter("descripcion").trim();
                 sala = new BeanSala(0L, nombre, capacidad, descripcion);
                 mensaje = new DaoSala().save(sala);
                 if (mensaje.contains("correctamente")){
-                    redirect = "/sala/salas?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/sala/salas?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }else{
-                    redirect = "/sala/sala-view?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/sala/sala-view-save?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }
                 break;
-            case "/sala/update":
+            case "/api/sala/update":
                 id_sala = request.getParameter("id_sala");
                 nombre = request.getParameter("nombre").trim();
                 capacidad = request.getParameter("capacidad").trim();
@@ -109,20 +118,20 @@ public class ServletSala extends HttpServlet {
                 sala = new BeanSala(Long.parseLong(id_sala), nombre,capacidad, descripcion);
                 mensaje = new DaoSala().update(sala);
                 if (mensaje.contains("correctamente")){
-                    redirect = "/sala/salas?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/sala/salas?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }else{
-                    redirect = "/sala/sala-view-update?id_sala=" + id_sala + "&result=false&message=" + URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/sala/sala-view-update?id_sala=" + id_sala + "&result=false&message=" + URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }
 
                 break;
-            case "/sala/delete":
+            case "/api/sala/delete":
                 id_sala = request.getParameter("id_sala");
 
                 mensaje = new DaoSala().delete(Long.parseLong(id_sala));
                 if (mensaje.contains("correctamente")){
-                    redirect = "/sala/salas?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/sala/salas?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }else{
-                    redirect = "/sala/salas?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/sala/salas?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }
                 break;
         }

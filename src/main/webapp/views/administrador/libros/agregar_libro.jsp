@@ -22,7 +22,7 @@
     <div class="card position-absolute top-50 start-50 translate-middle" style="width: 60%;">
       <div class="card-header text-white text-center" style="background: rgb(0, 148, 117)"><h5>REGISTRAR LIBRO</h5></div>
       <div class="card-body">
-        <form id="libro-form" class="needs-validation" novalidate action="/libro/save" method="post" enctype="multipart/form-data">
+        <form id="libro-form" class="needs-validation" novalidate action="/api/libro/save" method="post" enctype="multipart/form-data">
           <div class="form-group mb-3">
             <div class="row">
               <div class="col">
@@ -109,7 +109,7 @@
           <div class="form-group mb-3">
             <div class="row">
               <div class="col text-center">
-                <a href="/libro/libros" class="btn btn-danger mr-2">
+                <a href="/api/libro/libros" class="btn btn-danger mr-2">
                   Cancelar
                 </a>
                 <button id="enviar" type="submit" class="btn btn-success mr-2 " style="background: rgb(0, 148, 117);">Aceptar</button>

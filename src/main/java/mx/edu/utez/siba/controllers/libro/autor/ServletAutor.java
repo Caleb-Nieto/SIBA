@@ -18,9 +18,9 @@ import java.util.List;
 
 
 @WebServlet(name="auotores", urlPatterns = {
-        "/autor/autores", "/autor/autor-view",
-        "/autor/save", "/autor/autor-view-update",
-        "/autor/update", "/autor/delete", "/autor/search"
+        "/api/autor/autores", "/api/autor/autor-view-save",
+        "/api/autor/save", "/api/autor/autor-view-update",
+        "/api/autor/update", "/api/autor/delete", "/api/autor/search"
 })
 public class ServletAutor extends HttpServlet {
     private String action;
@@ -34,7 +34,7 @@ public class ServletAutor extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         action = request.getServletPath();
         switch (action){
-            case "/autor/autores":
+            case "/api/autor/autores":
                 int pagina = 1;
                 int limite = 12;
                 if (request.getParameter("page") != null) {
@@ -53,12 +53,12 @@ public class ServletAutor extends HttpServlet {
 
                 redirect= "/views/administrador/libros/autores/list_autores.jsp";
                 break;
-            case "/autor/autor-view":
+            case "/api/autor/autor-view-save":
 
 
                 redirect = "/views/administrador/libros/autores/agregar_autores.jsp";
                 break;
-            case "/autor/autor-view-update":
+            case "/api/autor/autor-view-update":
                 id_autor = request.getParameter("id_autor");
 
                 autor = new DaoAutor().findOne(Long.parseLong(id_autor));
@@ -66,17 +66,17 @@ public class ServletAutor extends HttpServlet {
                     request.setAttribute("autor", autor);
                     redirect = "/views/administrador/libros/autores/editar_autores.jsp";
                 } else{
-                    redirect = "/autor/autores?result=false&message=¡Error! Acción no realizada correctamente";
+                    redirect = "/api/autor/autores?result=false&message=¡Error! Acción no realizada correctamente";
                 }
                 break;
-            case "/autor/search":
+            case "/api/autor/search":
 
                 String palabra = request.getParameter("palabra").trim();
 
                 if(!palabra.isEmpty()){
                     autores = new DaoAutor().search(palabra);
                 }else{
-                    redirect = "/autor/autores";
+                    redirect = "/api/autor/autores";
                 }
 
                 request.setAttribute("autores", autores);
@@ -91,7 +91,7 @@ public class ServletAutor extends HttpServlet {
         response.setContentType("text/html");
         action = request.getServletPath();
         switch(action){
-            case "/autor/save":
+            case "/api/autor/save":
                 autor = new BeanAutor();
 
                 autor.setNombre(request.getParameter("nombre").trim());
@@ -102,16 +102,16 @@ public class ServletAutor extends HttpServlet {
                 mensaje = new DaoAutor().save(autor);
 
                 if(mensaje.contains("correctamente")){
-                    redirect = "/autor/autores?result=true&message=" + URLEncoder
+                    redirect = "/api/autor/autores?result=true&message=" + URLEncoder
                             .encode(mensaje,
                                     StandardCharsets.UTF_8);
                 }else{
-                    redirect = "/autor/autor-view?result=false&message=" + URLEncoder
+                    redirect = "/api/autor/autor-view-save?result=false&message=" + URLEncoder
                             .encode(mensaje,
                                     StandardCharsets.UTF_8);
                 }
                 break;
-            case "/autor/update":
+            case "/api/autor/update":
                 autor = new BeanAutor();
 
                 autor.setId_autor(Long.parseLong(request.getParameter("id_autor")));
@@ -123,20 +123,20 @@ public class ServletAutor extends HttpServlet {
 
 
                 if (mensaje.contains("correctamente")){
-                    redirect = "/autor/autores?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/autor/autores?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }else{
-                    redirect = "/autor/autor-view-update?id_autor=" + autor.getId_autor() + "&result=false&message=" + URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/autor/autor-view-update?id_autor=" + autor.getId_autor() + "&result=false&message=" + URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }
                 break;
-            case "/autor/delete":
+            case "/api/autor/delete":
                 id_autor = request.getParameter("id_autor");
 
 
                 mensaje = new DaoAutor().delete(Long.parseLong(id_autor));
                 if (mensaje.contains("correctamente")){
-                    redirect = "/autor/autores?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/autor/autores?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }else{
-                    redirect = "/autor/autores?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/autor/autores?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }
                 break;
         }

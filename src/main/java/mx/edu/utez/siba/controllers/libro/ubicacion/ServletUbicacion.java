@@ -17,14 +17,14 @@ import java.util.List;
 
 
 @WebServlet(name = "ServletUbicacion", urlPatterns = {
-        "/ubicacion/ubicaciones",
-        "/ubicacion/ubicacion-view" , "/ubicacion/save",
-        "/ubicacion/ubicacion-view-update", "/ubicacion/update",
-        "/ubicacion/delete", "/ubicacion/search"
+        "/api/ubicacion/ubicaciones",
+        "/api/ubicacion/ubicacion-view-save" , "/api/ubicacion/save",
+        "/api/ubicacion/ubicacion-view-update", "/api/ubicacion/update",
+        "/api/ubicacion/delete", "/api/ubicacion/search"
 })
 public class ServletUbicacion extends HttpServlet {
     private String action;
-    private String redirect = "/ubicacion/ubicaciones";
+    private String redirect;
     private String id, mensaje;
     private BeanUbicacion ubicacion;
     private List<BeanUbicacion> ubicaciones;
@@ -33,7 +33,7 @@ public class ServletUbicacion extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         action = request.getServletPath();
         switch(action){
-            case "/ubicacion/ubicaciones":
+            case "/api/ubicacion/ubicaciones":
                 int pagina = 1;
                 int limite = 12;
                 if (request.getParameter("page") != null) {
@@ -52,10 +52,10 @@ public class ServletUbicacion extends HttpServlet {
 
                 redirect= "/views/administrador/libros/ubicaciones/list_ubicaciones.jsp";
                 break;
-            case "/ubicacion/ubicacion-view":
+            case "/api/ubicacion/ubicacion-view-save":
                 redirect = "/views/administrador/libros/ubicaciones/agregar_ubicacion.jsp";
                 break;
-            case "/ubicacion/ubicacion-view-update":
+            case "/api/ubicacion/ubicacion-view-update":
                 id = request.getParameter("id");
 
                 ubicacion = new DaoUbicacion().findOne(Long.parseLong(id));
@@ -64,10 +64,10 @@ public class ServletUbicacion extends HttpServlet {
                     request.setAttribute("ubicacion", ubicacion);
                     redirect = "/views/administrador/libros/ubicaciones/editar_ubicacion.jsp";
                 } else{
-                    redirect = "/ubicacion/ubicaciones?result=false&message=¡Error! Acción no realizada correctamente";
+                    redirect = "/api/ubicacion/ubicaciones?result=false&message=¡Error! Acción no realizada correctamente";
                 }
                 break;
-            case "/ubicacion/search":
+            case "/api/ubicacion/search":
 
                 String palabra = request.getParameter("palabra").trim();
 
@@ -91,7 +91,7 @@ public class ServletUbicacion extends HttpServlet {
         response.setContentType("text/html");
         action = request.getServletPath();
         switch (action){
-            case "/ubicacion/save":
+            case "/api/ubicacion/save":
                 ubicacion = new BeanUbicacion();
 
 
@@ -105,12 +105,12 @@ public class ServletUbicacion extends HttpServlet {
                 mensaje = new DaoUbicacion().save(ubicacion);
 
                 if (mensaje.contains("correctamente")){
-                    redirect = "/ubicacion/ubicaciones?result=true&message="+ URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/ubicacion/ubicaciones?result=true&message="+ URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }else{
-                    redirect = "/ubicacion/ubicacion-view?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/ubicacion/ubicacion-view-save?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }
                 break;
-            case "/ubicacion/update":
+            case "/api/ubicacion/update":
 
                 if(request.getParameter("pasillo") != null && request.getParameter("seccion") != null && request.getParameter("estante") != null){
                     ubicacion.setPasillo(Integer.parseInt(request.getParameter("pasillo").trim()));
@@ -120,21 +120,21 @@ public class ServletUbicacion extends HttpServlet {
 
                 mensaje = new DaoUbicacion().update(ubicacion);
                 if (mensaje.contains("correctamente")){
-                    redirect = "/ubicacion/ubicaciones?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/ubicacion/ubicaciones?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }else{
-                    redirect = "/ubicacion/ubicacion-view-update?id=" + id + "&result=false&message=" + URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/ubicacion/ubicacion-view-update?id=" + id + "&result=false&message=" + URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }
 
                 break;
-            case "/ubicacion/delete":
+            case "/api/ubicacion/delete":
                 id = request.getParameter("id");
 
 
                 mensaje = new DaoUbicacion().delete(Long.parseLong(id));
                 if (mensaje.contains("correctamente")){
-                    redirect = "/ubicacion/ubicaciones?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/ubicacion/ubicaciones?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }else{
-                    redirect = "/ubicacion/ubicaciones?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/ubicacion/ubicaciones?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }
                 break;
         }

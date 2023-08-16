@@ -22,7 +22,7 @@
         <div class="card position-absolute top-50 start-50 translate-middle" style="width: 60%;">
             <div class="card-header text-white text-center bg-primary"><h5>ACTUALIZAR LIBRO</h5></div>
             <div class="card-body">
-                <form id="libro-form" class="needs-validation" novalidate action="/libro/update" method="post" enctype="multipart/form-data">
+                <form id="libro-form" class="needs-validation" novalidate action="/api/libro/update" method="post" enctype="multipart/form-data">
                     <label for="id_libro" ></label>
                     <input hidden value="${libro.id}" id="id_libro" name="id_libro" />
                     <div class="form-group mb-3">
@@ -101,14 +101,14 @@
                                    name="portada" />
                         </div>
                         <div class="col-12">
-                            <img class="card-img-top d-block mx-auto" style="height: 260px;width: auto;" src="/libro/loadfile?file=${libro.id}"/>
+                            <img class="card-img-top d-block mx-auto" style="height: 260px;width: auto;" src="/api/libro/loadfile?file=${libro.id}"/>
                         </div>
                         <div class="card mt-2" id="preview"></div>
                     </div>
                     <div class="form-group mb-3">
                         <div class="row">
                             <div class="col text-center">
-                                <a href="/libro/libros" class="btn btn-danger mr-2">
+                                <a href="/api/libro/libros" class="btn btn-danger mr-2">
                                     Cancelar
                                 </a>
                                 <button id="enviar" type="submit" class="btn btn-success mr-2 bg-primary">Actualizar</button>

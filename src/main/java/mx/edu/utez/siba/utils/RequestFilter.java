@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebFilter(urlPatterns = {"/*"})
+@WebFilter(urlPatterns = {"/api/*"})
 public class RequestFilter implements Filter {
 
     List<String> whiteList = new ArrayList<>();
@@ -18,7 +18,7 @@ public class RequestFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         //Endpoints publicos
-        whiteList.add("/login");
+        whiteList.add("/api/login");
     }
 
     @Override
@@ -36,7 +36,7 @@ public class RequestFilter implements Filter {
             if (session.getAttribute("usuario") != null) {
                 filterChain.doFilter(servletRequest, servletResponse);
             } else {
-                response.sendRedirect(request.getContextPath() + "/login");
+                response.sendRedirect(request.getContextPath() + "/api/login");
             }
         }
     }

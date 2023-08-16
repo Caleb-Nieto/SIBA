@@ -19,7 +19,7 @@
             <div class="col-12 mb-12 mt-12 mb-4">
                 <div class="row">
                     <div class="col-10">
-                        <form action="/sala/search" method="get">
+                        <form action="/api/sala/search" method="get">
                             <div class="row">
                                 <div class="col-3">
                                 </div>
@@ -36,7 +36,7 @@
                         </form>
                     </div>
                     <div class="col">
-                        <a href="/sala/sala-view" class="btn btn-success">Agregar Sala</a>
+                        <a href="/api/sala/sala-view-save" class="btn btn-success">Agregar Sala</a>
                     </div>
                 </div>
             </div>
@@ -74,7 +74,7 @@
                                 <div class="row">
                                     <c:if test="${empty sala.prestamo}">
                                         <div class="col">
-                                            <form method="get" action="/sala/sala-view-update">
+                                            <form method="get" action="/api/sala/sala-view-update">
                                                 <input hidden value="${sala.id_sala}" name="id_sala"/>
                                                 <button type="submit" class="btn btn-primary btn-sm">
                                                     Editar
@@ -82,7 +82,7 @@
                                             </form>
                                         </div>
                                         <div class="col">
-                                            <form class="deleteForm" method="post" action="/sala/delete">
+                                            <form class="deleteForm" method="post" action="/api/sala/delete">
                                                 <input hidden value="${sala.id_sala}" name="id_sala"/>
                                                 <button type="button" onclick="alerta(this)" class="btn btn-danger btn-sm">
                                                     Eliminar
@@ -103,22 +103,22 @@
                 <div class="pagination d-flex mt-2 mb-2">
                     <div class="btn-group" role="group" aria-label="Botones de paginación">
                         <c:if test="${paginaActual > 1}">
-                            <a href="/sala/salas?page=${paginaActual - 1}" class="btn btn-light border-black"><< Anterior</a>
+                            <a href="/api/sala/salas?page=${paginaActual - 1}" class="btn btn-light border-black"><< Anterior</a>
                         </c:if>
 
                         <c:forEach begin="1" end="${totalPaginas}" var="numeroPagina">
                             <c:choose>
                                 <c:when test="${numeroPagina == paginaActual}">
-                                    <a href="/sala/salas?page=${numeroPagina}" class="btn btn-light active border-black">${numeroPagina}</a>
+                                    <a href="/api/sala/salas?page=${numeroPagina}" class="btn btn-light active border-black">${numeroPagina}</a>
                                 </c:when>
                                 <c:otherwise>
-                                    <a href="/sala/salas?page=${numeroPagina}" class="btn btn-light border-black">${numeroPagina}</a>
+                                    <a href="/api/sala/salas?page=${numeroPagina}" class="btn btn-light border-black">${numeroPagina}</a>
                                 </c:otherwise>
                             </c:choose>
                         </c:forEach>
 
                         <c:if test="${paginaActual < totalPaginas}">
-                            <a href="/sala/salas?page=${paginaActual + 1}" class="btn btn-light border-black">Siguiente >></a>
+                            <a href="/api/sala/salas?page=${paginaActual + 1}" class="btn btn-light border-black">Siguiente >></a>
                         </c:if>
                     </div>
                 </div>

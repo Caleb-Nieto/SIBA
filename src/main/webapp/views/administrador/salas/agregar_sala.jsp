@@ -15,17 +15,18 @@
         <div class="card position-absolute top-50 start-50 translate-middle" style="width: 20%">
             <div class="card-header text-white text-center" style="background: rgb(0, 148, 117)"><h5>REGISTRAR SALA</h5></div>
             <div class="card-body">
-                <form id="sala-form" class="needs-validation" novalidate action="/sala/save" method="post">
+                <h1>${sala.nombre}</h1>
+                <form id="sala-form" class="needs-validation" novalidate action="/api/sala/save" method="post">
                     <div class="form-group mb-3">
                                 <label for="nombre" class="fw-bold">Nombre de la sala:</label>
-                                <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Sala #" required maxlength="30"/>
+                                <input type="text" name="nombre" id="nombre"  value="${sala.nombre}" class="form-control" placeholder="Sala #" required maxlength="30"/>
                                 <div class="invalid-feedback">Campo obligatorio</div>
                     </div>
                     <div class="form-group mb-3">
                         <div class="row">
                             <div class="col">
                                 <label for="capacidad" class="fw-bold">Capacidad:</label>
-                                <input type="number" name="capacidad" id="capacidad" class="form-control" placeholder="Número personas" required  min="1" max="100"/>
+                                <input type="number" name="capacidad" id="capacidad" value="${sala.capacidad}" class="form-control" placeholder="Número personas" required  min="1" max="100"/>
                                 <div class="invalid-feedback">Campo obligatorio</div>
                             </div>
                         </div>
@@ -34,7 +35,7 @@
                         <div class="row">
                             <div class="col">
                                 <label for="descripcion" class="fw-bold">Descripción:</label>
-                                <textarea name="descripcion" id="descripcion" class="form-control" required rows="3" maxlength="100" style="resize: none;"></textarea>
+                                <textarea name="descripcion" id="descripcion" value="${sala.descripcion}" class="form-control" required rows="3" maxlength="100" style="resize: none;"></textarea>
                                 <div class="invalid-feedback">Campo obligatorio</div>
                             </div>
                         </div>
@@ -42,7 +43,7 @@
                     <div class="form-group mb-3">
                         <div class="row">
                             <div class="col text-center">
-                                <a href="/sala/salas" class="btn btn-outline-danger mr-2">
+                                <a href="/api/sala/salas" class="btn btn-outline-danger mr-2">
                                     Cancelar
                                 </a>
                                 <button id="enviar" type="submit" class="btn btn-success mr-2 " style="background: rgb(0, 148, 117);">Aceptar</button>

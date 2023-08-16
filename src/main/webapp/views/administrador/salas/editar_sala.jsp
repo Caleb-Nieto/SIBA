@@ -15,7 +15,7 @@
         <div class="card position-absolute top-50 start-50 translate-middle" style="width: 20%">
             <div class="card-header bg-primary text-white text-center"><h5>ACTUALIZAR SALA</h5></div>
             <div class="card-body">
-                <form id="sala-form" class="needs-validation" novalidate action="/sala/update" method="post">
+                <form id="sala-form" class="needs-validation" novalidate action="/api/sala/update" method="post">
                     <input hidden value="${sala.id_sala}" name="id_sala">
                     <div class="form-group mb-3">
                         <label for="nombre" class="fw-bold">Nombre de la sala:</label>
@@ -43,7 +43,7 @@
                     <div class="form-group mb-3">
                         <div class="row">
                             <div class="col text-center">
-                                <a href="/sala/salas" class="btn btn-outline-danger mr-2">
+                                <a href="/api/sala/salas" class="btn btn-outline-danger mr-2">
                                     Cancelar
                                 </a>
                                 <button id="enviar" type="submit" class="btn btn-primary mr-2">Actualizar</button>
