@@ -7,7 +7,7 @@ CREATE TABLE Usuarios(
     apellido_paterno VARCHAR(50) NOT NULL,
 	apellido_materno VARCHAR(50) NOT NULL,
     correo VARCHAR(100) NOT NULL,
-    contrasenia VARCHAR(20) not null,
+    contrasenia VARBINARY(128) not null,
     telefono VARCHAR(12) NOT NULL,
     rol int NOT NULL,
     PRIMARY KEY(id_usuario)
@@ -661,33 +661,66 @@ END;$$
 
 
 DELIMITER $$
-CREATE PROCEDURE Insertar_Usuario (_nombre VARCHAR(50), _apellido_paterno VARCHAR(50), _apellido_materno VARCHAR(50), 
-_correo VARCHAR(100), _contrasenia varchar(100), _telefono VARCHAR(12), _rol INT, OUT mensaje VARCHAR(255))
+CREATE PROCEDURE Insertar_Usuario (
+    _nombre VARCHAR(50),
+    _apellido_paterno VARCHAR(50),
+    _apellido_materno VARCHAR(50),
+    _correo VARCHAR(100),
+    _contrasenia varchar(100),
+    _telefono VARCHAR(12),
+    _no_trabajador varchar(100),
+    _division varchar(100),
+    _matricula varchar(100),
+    _grado int,
+    _grupo varchar(100),
+    OUT mensaje VARCHAR(255)
+)
 BEGIN
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    DECLARE contrasenia_encrypt varbinary(128);
+    DECLARE exit HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
-        SELECT 'Se produjo una excepción durante la transacción' AS mensaje;
+        SET mensaje = 'Se produjo una excepción durante la transacción';
     END;
+
     SET autocommit = 0;
     START TRANSACTION;
-    case
-		when LENGTH(_contrasenia) < 8 then 
-			set mensaje = 'La contraseña debe tener almenos 8 caracteres';
-			ROLLBACK;
-        when LENGTH(_contrasenia) > 20 then 
-			set mensaje = 'La contraseña es demasido larga';
-			ROLLBACK;
-        when EXISTS (SELECT * FROM Usuarios WHERE nombre = _nombre AND apellido_paterno = _apellido_paterno AND apellido_materno = _apellido_materno
-		AND correo = _correo) then 
-			set mensaje = 'Ya existe un usuario con esa información';
-			ROLLBACK;
-        ELSE
-			INSERT INTO Usuarios (nombre, apellido_paterno, apellido_materno, correo, contrasenia, telefono, rol) 
-			VALUES (_nombre, _apellido_paterno, _apellido_materno, _correo, _contrasenia, _telefono, _rol);
-            SET mensaje = 'Usuario Registrado';
-			COMMIT;
-    end case;
+
+    IF LENGTH(_contrasenia) < 8 THEN
+        SET mensaje = 'La contraseña debe tener al menos 8 caracteres';
+        ROLLBACK;
+    ELSEIF LENGTH(_contrasenia) > 20 THEN
+        SET mensaje = 'La contraseña es demasiado larga';
+        ROLLBACK;
+    ELSEIF EXISTS (SELECT * FROM Usuarios WHERE correo = _correo) THEN
+        SET mensaje = 'El correo ingresado ya se encuentra ligado a una cuenta';
+        ROLLBACK;
+    ELSE
+        SET contrasenia_encrypt = aes_encrypt(_contrasenia, 'A4E7C6AE4013276DEABC1BE4F9C65A6DC382F317E0CB81497ABA26915CDE5B66');
+
+        IF (_no_trabajador IS NULL AND _division IS NULL AND _matricula IS NULL AND _grado IS NULL AND _grupo IS NULL) THEN
+            INSERT INTO Usuarios (nombre, apellido_paterno, apellido_materno, correo, contrasenia, telefono, rol)
+            VALUES (_nombre, _apellido_paterno, _apellido_materno, _correo, contrasenia_encrypt, _telefono, 2);
+            SET mensaje = 'Usuario Bibliotecario registrado';
+
+        ELSEIF (_matricula IS NULL AND _grado IS NULL AND _grupo IS NULL) THEN
+            INSERT INTO Usuarios (nombre, apellido_paterno, apellido_materno, correo, contrasenia, telefono, rol)
+            VALUES (_nombre, _apellido_paterno, _apellido_materno, _correo, contrasenia_encrypt, _telefono, 3);
+            INSERT INTO Docentes (no_trabajador, division, id_usuario)
+            VALUES (_no_trabajador, _division, last_insert_id());
+            SET mensaje = 'Usuario Docente registrado';
+
+        ELSEIF (_no_trabajador IS NULL AND _division IS NULL) THEN
+            INSERT INTO Usuarios (nombre, apellido_paterno, apellido_materno, correo, contrasenia, telefono, rol)
+            VALUES (_nombre, _apellido_paterno, _apellido_materno, _correo, contrasenia_encrypt, _telefono, 4);
+            INSERT INTO Alumnos (matricula, grado, grupo, id_usuario)
+            VALUES (_matricula, _grado, _grupo, last_insert_id());
+            SET mensaje = 'Usuario Alumno registrado';
+        END IF;
+
+        COMMIT;
+    END IF;
+
     SET autocommit = 1;
 END;$$
 

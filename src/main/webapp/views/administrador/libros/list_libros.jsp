@@ -83,7 +83,7 @@
                                             </small>
                                         </p>
                                         <div class="row">
-                                            <form method="get" action="/api/autor/autor-view-save">
+                                            <form method="get" action="/api/ejemplar/ejemplar-view-save">
                                                 <input hidden value="${libro.id}" name="id_libro"/>
                                                 <div class="d-grid gap-1 mx-auto">
                                                     <button type="submit" class="btn btn-success btn-sm">

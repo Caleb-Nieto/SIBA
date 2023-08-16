@@ -29,7 +29,6 @@ public class ServletEjemplar extends HttpServlet {
     private String id_ejemplar, observaciones;
     private BeanLibro libro;
     private String mensaje;
-    private HttpSession session;
     private BeanEjemplar ejemplar;
     private List<BeanEjemplar> ejemplares;
 
@@ -55,7 +54,12 @@ public class ServletEjemplar extends HttpServlet {
                 request.setAttribute("totalPaginas", totalPaginas);
                 request.setAttribute("paginaActual", pagina);
 
-                redirect= "/views/administrador/ejemplares/list_ejemplares.jsp";
+                redirect = "/views/administrador/libros/ejemplares/list_ejemplares.jsp";
+                break;
+
+            case "/api/ejemplar/ejemplar-view-save":
+
+                redirect = "/views/administrador/libros/ejemplares/agregar_ejemplares.jsp";
                 break;
         }
         request.getRequestDispatcher(redirect).forward(request, response);
