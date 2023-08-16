@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>ERROR 401</title>
-    <link type="text/css" rel="stylesheet" href="css/errors.css" />
+    <link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}css/errors.css" />
 </head>
 <body>
 <div class="error-page">
@@ -12,7 +12,7 @@
     </div>
 </div>
 
-<a href="#" class="back">GO BACK</a>
+<a href="${pageContext.request.contextPath}/api/login" class="back">Regresar</a>
 
 <div id="tsparticles"></div>
 
