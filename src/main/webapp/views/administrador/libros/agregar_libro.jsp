@@ -19,8 +19,8 @@
 <body>
 <div class="container-fluid">
   <div class="col align-middle">
-    <div class="card position-absolute top-50 start-50 translate-middle" style="width: 60%;">
-      <div class="card-header text-white text-center" style="background: rgb(0, 148, 117)"><h5>REGISTRAR LIBRO</h5></div>
+    <div class="card position-absolute top-50 start-50 translate-middle" style="width: 50%;">
+      <div class="card-header text-white text-center" style="background: #045c4a"><h5>Registro Libro</h5></div>
       <div class="card-body">
         <form id="libro-form" class="needs-validation" novalidate action="/libro/save" method="post" enctype="multipart/form-data">
           <div class="form-group mb-3">
@@ -31,7 +31,7 @@
                 <div class="invalid-feedback">Campo obligatorio</div>
               </div>
               <div class="col">
-                <label for="autores_ids" class="fw-bold">Autor(es)</label>
+                <label for="autores_ids" class="fw-bold">Autor(es):</label>
                 <select name="autores_ids" id="autores_ids" required class="form-select" multiple>
                   <option value="">Seleccione...</option>
                   <c:forEach var="autor" items="${autores}">
@@ -57,41 +57,40 @@
                 <input type="text" name="editorial" id="editorial" class="form-control" required maxlength="30"/>
                 <div class="invalid-feedback">Campo obligatorio</div>
               </div>
-                <div class="col">
-                  <label for="isbn" class="fw-bold">ISBN:</label>
-                  <input type="text" name="isbn" id="isbn" class="form-control" required  maxlength="20"/>
-                  <div class="invalid-feedback">Campo obligatorio</div>
-                </div>
+              <div class="col">
+                <label for="isbn" class="fw-bold">ISBN:</label>
+                <input type="text" name="isbn" id="isbn" class="form-control" placeholder="" required  maxlength="20"/>
+                <div class="invalid-feedback">Campo obligatorio</div>
+              </div>
             </div>
           </div>
           <div class="form-group mb-3">
-              <div class="row">
-                <div class="col">
-                  <label for="id_ejemplar" class="fw-bold">Identificador del ejemplar:</label>
-                  <input type="number" name="id_ejemplar" id="id_ejemplar" class="form-control" required min="0"/>
-                  <div class="invalid-feedback">Campo obligatorio</div>
-                </div>
-                <div class="col">
-                  <label for="observaciones" class="fw-bold">Observaciones:</label>
-                  <input type="text" name="observaciones" id="observaciones" class="form-control" required  maxlength="20"/>
-                  <div class="invalid-feedback">Campo obligatorio</div>
-                </div>
-                <div class="col">
-                  <label for="ubicacion_id" class="fw-bold">Ubicación: </label>
-                  <label class="fw-bold">Pasillo, sección, estante </label>
-                  <select name="ubicacion_id" id="ubicacion_id" required class="form-select">
-                    <option value="">Seleccione...</option>
-                    <c:forEach var="ubicacion" items="${ubicaciones}">
-                      <option value="${ubicacion.id}"><c:out value="${ubicacion.pasillo}, "/>
-                        <c:out value="${ubicacion.seccion}, "/> <c:out
+            <div class="row">
+              <div class="col">
+                <label for="id_ejemplar" class="fw-bold">Id del ejemplar:</label>
+                <input type="number" name="id_ejemplar" id="id_ejemplar" class="form-control" required min="0"/>
+                <div class="invalid-feedback">Campo obligatorio</div>
+              </div>
+              <div class="col">
+                <label for="observaciones" class="fw-bold">Observaciones:</label>
+                <input type="text" name="observaciones" id="observaciones" class="form-control" required  maxlength="20"/>
+                <div class="invalid-feedback">Campo obligatorio</div>
+              </div>
+              <div class="col">
+                <label for="ubicacion_id" class="fw-bold">Ubicación:</label>
+                <select name="ubicacion_id" id="ubicacion_id" required class="form-select">
+                  <option value="">Seleccione...</option>
+                  <c:forEach var="ubicacion" items="${ubicaciones}">
+                    <option value="${ubicacion.id}"><c:out value="${ubicacion.pasillo}, "/>
+                      <c:out value="${ubicacion.seccion}, "/> <c:out
                               value="${ubicacion.estante}"/></option>
-                    </c:forEach>
-                  </select>
-                  <div class="invalid-feedback">
-                    Campo obligatorio
-                  </div>
+                  </c:forEach>
+                </select>
+                <div class="invalid-feedback">
+                  Campo obligatorio
                 </div>
               </div>
+            </div>
           </div>
 
           <div class="form-group-divider"></div>
@@ -106,7 +105,7 @@
             </div>
             <div class="card mt-2" id="preview"></div>
           </div>
-          <div class="form-group mb-3">
+          <div class="form-group">
             <div class="row">
               <div class="col text-center">
                 <a href="/libro/libros" class="btn btn-danger mr-2">
