@@ -294,6 +294,36 @@ public class DaoLibro{
         return libro;
     }
 
+    //Mostar los libros de un autor
+    public List<BeanLibro> libros(Long id_autor) {
+        List<BeanLibro> libros = new ArrayList<>();
+
+        try {
+            conn = new MySQLConnection().getConnection();
+            String query = "call libros(?)";
+            cstm = conn.prepareCall(query);
+
+            cstm.setLong(1, id_autor);
+
+            cstm.execute();
+            rs = cstm.getResultSet();
+
+            while (rs.next()) {
+                BeanLibro libro = new BeanLibro();
+
+                libro.setTitulo(rs.getString("titulo"));
+
+                libros.add(libro);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(DaoSala.class.getName())
+                    .log(Level.SEVERE, "Error FindAutores" + e.getMessage());
+        } finally {
+            close();
+        }
+        return libros;
+    }
+
 
     public void close(){
         try {

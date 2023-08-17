@@ -1,21 +1,16 @@
 package mx.edu.utez.siba.models.usuario;
 
-public class BeanDocente {
+public class BeanDocente extends BeanUsuario {
     private String no_trabajador;
     private String division;
-    private BeanUsuario id_usuario;
 
     public BeanDocente() {
     }
 
-    public BeanDocente(BeanUsuario id_usuario) {
-        this.id_usuario = id_usuario;
-    }
-
-    public BeanDocente(String no_trabajador, String division, BeanUsuario id_usuario) {
+    public BeanDocente(Long id_usuario, String nombre, String apellido_paterno, String apellido_materno, String correo, String contrasenia, String telefono, int rol, String no_trabajador, String division) {
+        super(id_usuario, nombre, apellido_paterno, apellido_materno, correo, contrasenia, telefono, rol);
         this.no_trabajador = no_trabajador;
         this.division = division;
-        this.id_usuario = id_usuario;
     }
 
     public String getNo_trabajador() {
@@ -32,13 +27,5 @@ public class BeanDocente {
 
     public void setDivision(String division) {
         this.division = division;
-    }
-
-    public BeanUsuario getId_usuario() {
-        return id_usuario;
-    }
-
-    public void setId_usuario(BeanUsuario id_usuario) {
-        this.id_usuario = id_usuario;
     }
 }

@@ -2,6 +2,8 @@ package mx.edu.utez.siba.controllers.usuario;
 
 import com.mysql.cj.log.Log;
 import mx.edu.utez.siba.models.libro.DaoLibro;
+import mx.edu.utez.siba.models.usuario.BeanAlumno;
+import mx.edu.utez.siba.models.usuario.BeanDocente;
 import mx.edu.utez.siba.models.usuario.BeanUsuario;
 import mx.edu.utez.siba.service.UsuarioService;
 import jakarta.servlet.ServletException;
@@ -52,12 +54,24 @@ public class ServletUsuarioLogin extends HttpServlet {
 
                 try{
                     BeanUsuario usuario = usuarioService.login(correo, contrasenia);
+
                     if (usuario != null) {
                         session = req.getSession();
-                        session.setAttribute("usuario", usuario);
-                        session.setAttribute("rol", usuario.getRol());
+                        if(usuario instanceof BeanAlumno){
+                            BeanAlumno alumno = (BeanAlumno) usuario;
+                            session.setAttribute("usuario", alumno);
+                            session.setAttribute("rol", alumno.getRol());
 
+                        }else if(usuario instanceof BeanDocente){
+                            BeanDocente docente = (BeanDocente) usuario;
+                            session.setAttribute("usuario", docente);
+                            session.setAttribute("rol", docente.getRol());
 
+                        }else{
+                            session.setAttribute("usuario", usuario);
+                            session.setAttribute("rol", usuario.getRol());
+
+                        }
                         if (usuario.getRol() == 1) {
                             urlRedirect = "/api/libro/libros";
                         } else if (usuario.getRol() == 2) {

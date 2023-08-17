@@ -7,7 +7,7 @@ CREATE TABLE Usuarios(
     apellido_paterno VARCHAR(50) NOT NULL,
 	apellido_materno VARCHAR(50) NOT NULL,
     correo VARCHAR(100) NOT NULL,
-    contrasenia VARBINARY(128) not null,
+    contrasenia varbinary(128) not null,
     telefono VARCHAR(12) NOT NULL,
     rol int NOT NULL,
     PRIMARY KEY(id_usuario)
@@ -870,9 +870,20 @@ select * from ubicaciones_libros u ORDER BY pasillo, seccion, estante limit inic
 end;$$
 
 delimiter $$
-create procedure validar_usuario(_correo VARCHAR(100), _contrasenia VARCHAR(100))
+create procedure cargar_usuario(_correo VARCHAR(100), _contrasenia VARCHAR(100))
 begin
-SELECT * FROM Usuarios where correo = _correo AND contrasenia = _contrasenia;
+    DECLARE contra varbinary(128);
+    DECLARE r int;
+    SET contra = AES_ENCRYPT(_contrasenia, 'A4E7C6AE4013276DEABC1BE4F9C65A6DC382F317E0CB81497ABA26915CDE5B66');
+    SELECT rol INTO r FROM usuarios WHERE correo = _correo AND contrasenia = contra;
+
+    IF r = 1 OR r = 2 THEN
+    SELECT * FROM usuarios WHERE correo = _correo AND contrasenia = contra;
+    ELSEIF r = 3 THEN
+    SELECT u.*, d.* FROM usuarios u INNER JOIN docentes d ON u.id_usuario = d.id_usuario WHERE u.correo = _correo AND u.contrasenia = contra;
+    ELSEIF r = 4 THEN
+    SELECT u.*, a.* FROM usuarios u INNER JOIN alumnos a ON u.id_usuario = a.id_usuario WHERE u.correo = _correo AND u.contrasenia = contra;
+    END IF;
 end;$$
 
 delimiter $$
@@ -1098,5 +1109,35 @@ end;$$
 insert into salas values(0, 'Sala 1', '30', '1 proyector, mesas redondas, sillas giratorias c/u y 2 refrigeradores');
 insert into salas values(0, 'Sala 2', '10', '2 mesas cuadradas, sillas b3 c/u y 1 aire acondicionado');
 insert into salas values(0, 'Sala 3', '15', '1 mesa');
-insert into usuarios values (0, 'Miguel', 'Sanchez', 'Perez', 'admin@utez.edu.mx', '123', '7778769090', 1);
-insert into usuarios values (0, 'Santiago', 'Sanchez', 'Perez', 'biblio@utez.edu.mx', '123', '7778769090', 2);
+
+INSERT INTO Autores (nombre, apellido_paterno, apellido_materno)
+VALUES ('Juan', 'Pérez', 'García');
+
+INSERT INTO Autores (nombre, apellido_paterno, apellido_materno)
+VALUES ('María', 'López', 'Martínez');
+
+INSERT INTO Autores (nombre, apellido_paterno, apellido_materno)
+VALUES ('Carlos', 'González', 'Sánchez');
+
+INSERT INTO Autores (nombre, apellido_paterno, apellido_materno)
+VALUES ('Ana', 'Rodríguez', 'Hernández');
+
+INSERT INTO Autores (nombre, apellido_paterno, apellido_materno)
+VALUES ('Luis', 'Martínez', 'Ramírez');
+
+-- Insertar registros en la tabla Ubicaciones_libros
+INSERT INTO Ubicaciones_libros (pasillo, seccion, estante)
+VALUES (1, 2, 'A');
+
+INSERT INTO Ubicaciones_libros (pasillo, seccion, estante)
+VALUES (2, 3, 'B');
+
+INSERT INTO Ubicaciones_libros (pasillo, seccion, estante)
+VALUES (1, 1, 'C');
+
+INSERT INTO Ubicaciones_libros (pasillo, seccion, estante)
+VALUES (3, 2, 'D');
+
+INSERT INTO Ubicaciones_libros (pasillo, seccion, estante)
+VALUES (2, 1, 'E');
+

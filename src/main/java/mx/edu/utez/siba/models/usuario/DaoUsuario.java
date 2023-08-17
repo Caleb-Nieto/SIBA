@@ -14,31 +14,49 @@ public class DaoUsuario implements DaoRepository<BeanUsuario> {
     private CallableStatement cstm;
     private ResultSet rs;
 
-    public BeanUsuario validate (String correo, String contrasenia){
+    public BeanUsuario loadUserByEmailAndPassword (String correo, String contrasenia){
         try{
             conn = new MySQLConnection().getConnection();
-            String query = "call validar_usuario(?, ?);";
+            String query = "call cargar_usuario(?, ?);";
             cstm = conn.prepareCall(query);
             cstm.setString(1, correo);
             cstm.setString(2, contrasenia);
             cstm.execute();
             rs = cstm.getResultSet();
             if (rs.next()){
-                BeanUsuario usuario = new BeanUsuario();
-                usuario.setCorreo(rs.getString("correo"));
-                usuario.setContrasenia(rs.getString("contrasenia"));
-                usuario.setRol(rs.getInt("rol"));
-                return usuario;
+                Long id = rs.getLong("id_usuario");
+                String nombre = rs.getString("nombre");
+                String ap = rs.getString("apellido_paterno");
+                String am = rs.getString("apellido_materno");
+                String tel = rs.getString("telefono");
+                int rol = rs.getInt("rol");
+
+
+                if(rol == 4){
+                    String matricula = rs.getString("matricula");
+                    int grado = rs.getInt("grado");
+                    String grupo = rs.getString("grupo");
+
+                    return new BeanAlumno(id, nombre, ap, am, null, null, tel, rol, matricula, grado, grupo);
+                }else if(rol == 3){
+                    String no = rs.getString("no_trabajador");
+                    String division = rs.getString("division");
+
+                    return new BeanDocente(id, nombre, ap, am, null, null, tel, rol, no, division);
+                }else{
+                    return new BeanUsuario(id, nombre, ap, am, null, null, tel, rol);
+                }
             }
             return null;
         }catch (SQLException e){
             Logger.getLogger(DaoUsuario.class.getName())
-                    .log(Level.SEVERE, "Error closeConnection" + e.getMessage());
+                    .log(Level.SEVERE, "Error LoadUser " + e.getMessage());
             return null;
         }finally{
             close();
         }
     }
+
 
     @Override
     public List<BeanUsuario> findAll(int inicio ,int limte) {
@@ -52,7 +70,7 @@ public class DaoUsuario implements DaoRepository<BeanUsuario> {
             rs = cstm.getResultSet();
             while (rs.next()) {
                 BeanUsuario usuario = new BeanUsuario();
-                usuario.setId_usuario(rs.getInt("id_usuario"));
+                usuario.setId_usuario(rs.getLong("id_usuario"));
                 usuario.setNombre(rs.getString("nombre"));
                 usuario.setApellido_paterno(rs.getString("apellido_paterno"));
                 usuario.setApellido_materno(rs.getString("apellido_materno"));
@@ -82,7 +100,7 @@ public class DaoUsuario implements DaoRepository<BeanUsuario> {
             rs = cstm.getResultSet();
             BeanUsuario usuario = new BeanUsuario();
             if (rs.next()){
-                usuario.setId_usuario(rs.getInt("id_usuario"));
+                usuario.setId_usuario(rs.getLong("id_usuario"));
                 usuario.setNombre(rs.getString("nombre"));
                 usuario.setApellido_paterno(rs.getString("apellido_paterno"));
                 usuario.setApellido_materno(rs.getString("apellido_materno"));

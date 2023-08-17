@@ -1,7 +1,7 @@
 package mx.edu.utez.siba.models.usuario;
 
 public class BeanUsuario {
-    private int id_usuario;
+    private Long id_usuario;
     private String nombre;
     private String apellido_paterno;
     private String apellido_materno;
@@ -14,11 +14,7 @@ public class BeanUsuario {
     public BeanUsuario() {
     }
 
-    public BeanUsuario(int id_usuario) {
-        this.id_usuario = id_usuario;
-    }
-
-    public BeanUsuario(int id_usuario, String nombre, String apellido_paterno, String apellido_materno, String correo, String contrasenia, String telefono, int rol) {
+    public BeanUsuario(Long id_usuario, String nombre, String apellido_paterno, String apellido_materno, String correo, String contrasenia, String telefono, int rol) {
         this.id_usuario = id_usuario;
         this.nombre = nombre;
         this.apellido_paterno = apellido_paterno;
@@ -29,11 +25,11 @@ public class BeanUsuario {
         this.rol = rol;
     }
 
-    public int getId_usuario() {
+    public Long getId_usuario() {
         return id_usuario;
     }
 
-    public void setId_usuario(int id_usuario) {
+    public void setId_usuario(Long id_usuario) {
         this.id_usuario = id_usuario;
     }
 
