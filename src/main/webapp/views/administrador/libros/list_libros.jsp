@@ -20,7 +20,7 @@
                     <form action="/api/libro/search" method="get">
                         <div class="row">
                             <div class="col">
-                                <input type="search" class="form-control" name="palabra" id="palabra" placeholder="Nombre del libbro" maxlength="30">
+                                <input type="search" class="form-control" name="palabra" id="palabra" placeholder="buscar..." maxlength="30">
                             </div>
                             <div class="col">
                                 <button type="submit"  class="btn btn-secondary">Buscar</button>
@@ -28,9 +28,11 @@
                         </div>
                     </form>
                 </div>
-                <div class="col">
-                    <a href="/api/libro/libro-view-save" class="btn btn-success">Agregar Libro</a>
-                </div>
+                <c:if test="${rol == 1}">
+                    <div class="col">
+                        <a href="/api/libro/libro-view-save" class="btn btn-success">Agregar Libro</a>
+                    </div>
+                </c:if>
             </div>
         </div>
     </div>
@@ -56,17 +58,7 @@
                                 </div>
                                 <div class="col-md-7">
                                     <div class="card-body">
-                                        <h3 class="card-title"><c:out value="${libro.titulo}"/></h3>
-                                        <h5 class="card-text"><c:out value="${libro.ejemplares}"/>
-                                            <c:choose>
-                                                <c:when test="${libro.ejemplares > 1}">
-                                                    Ejemplares
-                                                </c:when>
-                                                <c:otherwise>
-                                                    Ejemplar
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </h5>
+                                        <h5 class="card-title"><c:out value="${libro.titulo}"/></h5>
                                         <div class="dropdown">
                                             <button class="btn btn-light btn-sm dropdown-toggle col-12" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                 Autor(es)
@@ -77,21 +69,36 @@
                                                 </c:forEach>
                                             </ul>
                                         </div>
-                                        <p class="card-text">
-                                            <small class="text-body-secondary">
-                                                <c:out value="Pasillo ${libro.ubicacion.pasillo}, seccion ${libro.ubicacion.seccion}, estante ${libro.ubicacion.estante}"/>
-                                            </small>
-                                        </p>
-                                        <div class="row">
-                                            <form method="get" action="/api/ejemplar/ejemplar-view-save">
-                                                <input hidden value="${libro.id}" name="id_libro"/>
-                                                <div class="d-grid gap-1 mx-auto">
-                                                    <button type="submit" class="btn btn-success btn-sm">
-                                                        Agregar ejemplar
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        </div>
+                                        <h6 class="card-text"><c:out value="Editorial: ${libro.editorial}"></c:out></h6>
+                                        <h6 class="card-text"><c:out value="ISBN: ${libro.isbn}"></c:out></h6>
+                                        <c:if test="${rol == 1 || rol == 2}">
+                                            <h6 class="card-text"><c:out value="${libro.ejemplares}"/>
+                                                <c:choose>
+                                                    <c:when test="${libro.ejemplares > 1}">
+                                                        Ejemplares
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        Ejemplar
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </h6>
+                                            <p class="card-text">
+                                                <small class="text-body-secondary">
+                                                    <c:out value="Pasillo ${libro.ubicacion.pasillo}, seccion ${libro.ubicacion.seccion}, estante ${libro.ubicacion.estante}"/>
+                                                </small>
+                                            </p>
+                                        </c:if>
+                                        <c:if test="${rol == 1}">
+                                            <div class="row">
+                                                <form method="get" action="/api/ejemplar/ejemplar-view-save">
+                                                    <input hidden value="${libro.id}" name="id_libro"/>
+                                                    <div class="d-grid gap-1 mx-auto">
+                                                        <button type="submit" class="btn btn-success btn-sm" disabled>
+                                                            Agregar ejemplar
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
                                             <div class="row mt-2">
                                                 <c:if test="${libro.ejemplares == 1}">
                                                     <form method="get" action="/api/libro/libro-view-update">
@@ -104,28 +111,27 @@
                                                     </form>
                                                 </c:if>
                                             </div>
-                                        <div class="row mt-2">
-                                            <c:if test="${libro.ejemplares > 1}">
-                                                <form method="get" action="/api/ejemplar/ejemplares">
-                                                    <input hidden value="${libro.id}" name="id_libro"/>
+                                            <div class="row mt-2">
+                                                <c:if test="${libro.ejemplares > 1}">
                                                     <div class="d-grid gap-1 mx-auto">
-                                                        <button type="submit" class="btn btn-secondary btn-sm">
-                                                            Ver ejemplares
-                                                        </button>
+                                                        <form method="get" action="/api/ejemplar/ejemplares">
+                                                            <input hidden value="${libro.id}" name="id_libro"/>
+                                                                <button type="submit" class="btn btn-secondary btn-sm" disabled>
+                                                                    Ver ejemplares
+                                                                </button>
+                                                        </form>
                                                     </div>
-                                                </form>
-                                            </c:if>
-                                            <c:if test="${libro.ejemplares == 1}">
-                                                <form class="deleteForm" method="post" action="/api/libro/delete">
-                                                    <input hidden value="${libro.id}" name="id_libro"/>
-                                                    <div class="d-grid gap-1 mx-auto">
-                                                        <button type="button" onclick="alerta(this)" class="btn btn-outline-danger btn-sm">
-                                                            Eliminar
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                            </c:if>
-                                        </div>
+                                                </c:if>
+                                                <c:if test="${libro.ejemplares == 1}">
+                                                    <form class="deleteForm" method="post" action="/api/libro/delete">
+                                                            <input hidden value="${libro.id}" name="id_libro"/>
+                                                            <button type="button" onclick="alerta(this)" class="btn btn-outline-danger btn-sm w-100">
+                                                                Eliminar
+                                                            </button>
+                                                    </form>
+                                                </c:if>
+                                            </div>
+                                        </c:if>
                                     </div>
                                 </div>
                             </div>
@@ -188,7 +194,7 @@
     //-----------------------------------------------
 
     //Selecciona cada formulario por el nombre de la clase y mientras el formulario sea false, este no se enviara
-    document.querySelectorAll('.deleteForm').forEach(form =>{
+    document.querySelectorAll('.deleteLibroForm').forEach(form =>{
         form.addEventListener('submit', event =>{
             if(!enviarFormulario){
                 event.preventDefault();

@@ -24,8 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
-
-
 @WebServlet(name="Libros", urlPatterns = {
         "/api/libro/libros", "/api/libro/save",
         "/api/libro/libro-view-save", "/api/libro/delete",

@@ -179,7 +179,7 @@ public class DaoLibro{
 
             cstm.setString(5, ejemplar.getObservaciones());
 
-            if(libro.getFile() != null && libro.getFileName().isEmpty()){
+            if(libro.getFile() != null && !libro.getFileName().isEmpty()){
                 cstm.setString(6, libro.getFileName());
                 cstm.setBytes(7, libro.getFile());
             }else{

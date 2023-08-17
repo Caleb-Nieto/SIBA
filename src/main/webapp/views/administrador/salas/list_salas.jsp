@@ -35,9 +35,11 @@
                             </div>
                         </form>
                     </div>
-                    <div class="col">
-                        <a href="/api/sala/sala-view-save" class="btn btn-success">Agregar Sala</a>
-                    </div>
+                    <c:if test="${rol == 1}">
+                        <div class="col">
+                            <a href="/api/sala/sala-view-save" class="btn btn-success">Agregar Sala</a>
+                        </div>
+                    </c:if>
                 </div>
             </div>
         </div>
@@ -69,10 +71,14 @@
                                 <p class="card-text"><c:out value="${sala.capacidad} personas"/></p>
                                 <h5 class="card-title">Descripción:</h5>
                                 <p class="card-text"><c:out value="${sala.descripcion}"/></p>
+                                <c:if test="${rol==2 && empty sala.prestamo}">
+                                    <label for="controlid">Matricula o Núm. Trabajador:</label>
+                                    <input type="text" id="controlid" class="form-control" name="idu">
+                                </c:if>
                             </div>
                             <div class="card-footer border-1 text-center" style="background: #045c4a; color: white;">
                                 <div class="row">
-                                    <c:if test="${empty sala.prestamo}">
+                                    <c:if test="${empty sala.prestamo && rol == 1}">
                                         <div class="col">
                                             <form method="get" action="/api/sala/sala-view-update">
                                                 <input hidden value="${sala.id_sala}" name="id_sala"/>
@@ -90,8 +96,39 @@
                                             </form>
                                         </div>
                                     </c:if>
-                                    <c:if test="${not empty salas}">
-                                        <h4 style="text-align: center; color: white"><c:out value="${sala.prestamo}"/></h4>
+
+                                    <c:if test="${rol == 2}">
+                                    <c:if test="${empty sala.prestamo}">
+                                        <div class="col">
+                                            <form method="get" action="">
+                                                <input hidden value="${sala.id_sala}" name="id_sala"/>
+                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                    Realizar prestamo
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </c:if>
+                                    <c:if test="${not empty sala.prestamo}">
+                                        <div class="col">
+                                            <form class="deleteForm" method="post" action="/api/sala/delete">
+                                                <input hidden value="${sala.id_sala}" name="id_sala"/>
+                                                <button type="button" class="btn btn-primary btn-sm">
+                                                    Finalizar pretamo
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </c:if>
+                                    </c:if>
+
+
+
+                                    <c:if test="${rol == 3 || rol == 4}">
+                                        <c:if test="${empty sala.prestamo}">
+                                            <h4 style="text-align: center; color: white">Disponible</h4>
+                                        </c:if>
+                                        <c:if test="${not empty sala.prestamo}">
+                                            <h4 style="text-align: center; color: white"><c:out value="${sala.prestamo}"/></h4>
+                                        </c:if>
                                     </c:if>
                                 </div>
                             </div>

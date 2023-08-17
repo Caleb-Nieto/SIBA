@@ -59,15 +59,13 @@ public class ServletUsuarioLogin extends HttpServlet {
 
 
                         if (usuario.getRol() == 1) {
-                            urlRedirect = "/api/sala/salas";
+                            urlRedirect = "/api/libro/libros";
                         } else if (usuario.getRol() == 2) {
-                            urlRedirect = "/views/bibliotecario/libros.jsp";
+                            urlRedirect = "/api/libro/libros";
                         } else if (usuario.getRol() == 3) {
-                            urlRedirect = "/sala/salas";
+                            urlRedirect = "/api/libro/libros";
                         } else if (usuario.getRol() == 4) {
-                            urlRedirect = "/perfil-alumno";
-                        } else {
-                            urlRedirect = "/list_users.jsp";
+                            urlRedirect = "/api/libro/libros";
                         }
                     } else {
                         throw new Exception("Credentials mismatch");
