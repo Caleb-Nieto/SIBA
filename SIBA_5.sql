@@ -1198,7 +1198,6 @@ begin
 select count(*) as total from Ejemplares;
 end; $$
 
-
 delimiter $$
 create procedure consultar_ejemplares(inicio int, limite int)
 begin
@@ -1211,31 +1210,17 @@ FROM ejemplares
     LIMIT inicio, limite;
 end; $$
 
-
 delimiter $$
 create procedure get_ejemplar(_ejemplar integer)
 begin
 select * from ejemplares where ejemplar=_ejemplar;
 end;$$
 
-
 delimiter $$
 create procedure buscar_ejemplar(palabra varchar(100))
 begin
 select  * from ejemplares where concat(observaciones) like concat('%', palabra, '%') or ejemplar like palabra;
 end; $$
-
-
-delimiter $$
-create procedure buscar_ejemplar(palabra varchar(100), out mensaje VARCHAR(255))
-begin
-        if not exists (select * from ejemplares where concat(observaciones) like concat('%', palabra, '%') or ejemplar like palabra) then
-        set mensaje = "No hay un registro con esas caracteristicas";
-else
-select * from ejemplares where concat(observaciones) like concat('%', palabra, '%') or ejemplar like palabra;
-end if;
-end; $$
-
 
 DROP PROCEDURE Insertar_ejemplar;
 DELIMITER $$
@@ -1261,7 +1246,6 @@ END CASE;
     SET autocommit = 1;
 END;$$
 
-
 DELIMITER $$
 create procedure eliminar_ejemplar(_ejemplar Integer, OUT mensaje varchar(255))
 begin
@@ -1283,7 +1267,6 @@ ROLLBACK;
 END IF;
     SET autocommit = 1;
 end;$$
-
 
 DELIMITER $$
 CREATE PROCEDURE actualizar_ejemplar (_ejemplar INT,_observaciones VARCHAR(255),OUT mensaje VARCHAR(255))
