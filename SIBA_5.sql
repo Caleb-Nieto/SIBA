@@ -446,7 +446,6 @@ FOR EACH ROW
 BEGIN
 	declare rol_ varchar(20);
 	case
-	     when rol = 0 then set rol_ = 'Desactivado';
 	    when rol = 1 then set rol_ = 'Administrador';
         when rol = 2 then set rol_ = 'Bibliotecario';
 		when rol = 3 then set rol_ = 'Docente';
@@ -700,7 +699,7 @@ BEGIN
 END;$$
 
 DELIMITER $$
-CREATE PROCEDURE Eliminar_Usuario (_id_usuario INT, OUT mensaje VARCHAR(255))
+CREATE PROCEDURE eliminar_usuario (_id_usuario INT, OUT mensaje VARCHAR(255))
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
@@ -710,8 +709,6 @@ BEGIN
     SET autocommit = 0;
     START TRANSACTION;
     IF EXISTS (SELECT * FROM Usuarios WHERE id_usuario=_id_usuario) THEN
-        DELETE FROM Usuarios
-        WHERE id_usuario=_id_usuario;
         IF EXISTS (SELECT * FROM Alumnos WHERE id_usuario=_id_usuario) THEN
                 DELETE FROM Alumnos
                 WHERE id_usuario=_id_usuario;
@@ -720,6 +717,9 @@ BEGIN
                 DELETE FROM Docentes
                 WHERE id_usuario=_id_usuario;
 		END IF;
+        DELETE FROM Usuarios
+        WHERE id_usuario=_id_usuario;
+        SET mensaje = 'El usuario se ha eliminado correctamente';
         COMMIT;
     ELSE
         SET mensaje = 'El usuario a eliminar no existe';
@@ -833,9 +833,9 @@ FROM libros l
 end; $$
 
 delimiter $$
-create procedure ver_usuarios()
+create procedure ver_usuarios(inicio int, limite int)
 begin
-select * from usuarios;
+select id_usuario, nombre, apellido_paterno, apellido_materno, correo, telefono, rol from usuarios order by nombre, apellido_paterno,apellido_materno limit inicio, limite;
 end;$$
 
 delimiter $$
@@ -971,6 +971,15 @@ create procedure buscar_autores(palabra varchar(100))
         order by nombre, apellido_paterno , apellido_materno;
     end; $$
 
+delimiter $$
+create procedure buscar_usuarios(palabra varchar(100))
+begin
+    select id_usuario, nombre, apellido_paterno, apellido_materno, correo, telefono, rol from usuarios
+    where concat(nombre,' ', apellido_paterno,' ', apellido_materno) like concat('%', palabra, '%') OR
+    correo like  concat('%', palabra, '%')
+    order by nombre, apellido_paterno,apellido_materno;
+end; $$
+
 
 delimiter $$
 create procedure buscar_ubicaciones(palabra varchar(100))
@@ -1009,6 +1018,11 @@ begin
     select count(*) as total from salas;
 end; $$
 
+delimiter $$
+create procedure contar_usuarios()
+begin
+    select count(*) as total from usuarios;
+end; $$
 
 delimiter $$
 create procedure contar_libros()

@@ -35,7 +35,7 @@ public class RequestFilter implements Filter {
             filterChain.doFilter(servletRequest, servletResponse);
         } else {
             HttpSession session = request.getSession();
-            if (session.getAttribute("usuario") != null) {
+            if (session.getAttribute("user") != null) {
                 filterChain.doFilter(servletRequest, servletResponse);
             } else {
                 response.sendRedirect(request.getContextPath() + "/api/login");

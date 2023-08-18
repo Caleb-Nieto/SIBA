@@ -3,7 +3,11 @@ package mx.edu.utez.siba.models.libro.ejemplar;
 import mx.edu.utez.siba.models.libro.BeanLibro;
 
 public class BeanEjemplar {
+
+
     private Long id_ejemplar;
+
+    private int ejemplar;
     private String observaciones;
     private BeanLibro libro;
 

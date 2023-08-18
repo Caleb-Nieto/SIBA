@@ -73,7 +73,7 @@ public class DaoLibro{
         int total = 0;
         try{
             conn = new MySQLConnection().getConnection();
-            String query = "call contar_libros()";
+            String query = "call contar_libros();";
             cstm = conn.prepareCall(query);
             cstm.execute();
             rs = cstm.getResultSet();
@@ -93,7 +93,7 @@ public class DaoLibro{
         BeanLibro libro = new BeanLibro();
         try{
             conn = new MySQLConnection().getConnection();
-            String query = "call get_libro(?)";
+            String query = "call get_libro(?);";
             cstm = conn.prepareCall(query);
             cstm.setLong(1, id);
             cstm.execute();
@@ -254,7 +254,7 @@ public class DaoLibro{
         String mensaje = ":(";
         try{
             conn = new MySQLConnection().getConnection();
-            String query = "call eliminar_libro(?, ?)";
+            String query = "call eliminar_libro(?, ?);";
             cstm = conn.prepareCall(query);
             cstm.setLong(1, id);
             cstm.registerOutParameter(2, Types.VARCHAR);
@@ -300,7 +300,7 @@ public class DaoLibro{
 
         try {
             conn = new MySQLConnection().getConnection();
-            String query = "call libros(?)";
+            String query = "call libros(?);";
             cstm = conn.prepareCall(query);
 
             cstm.setLong(1, id_autor);

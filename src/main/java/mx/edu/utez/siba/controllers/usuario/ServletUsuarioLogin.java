@@ -1,7 +1,6 @@
 package mx.edu.utez.siba.controllers.usuario;
 
-import com.mysql.cj.log.Log;
-import mx.edu.utez.siba.models.libro.DaoLibro;
+
 import mx.edu.utez.siba.models.usuario.BeanAlumno;
 import mx.edu.utez.siba.models.usuario.BeanDocente;
 import mx.edu.utez.siba.models.usuario.BeanUsuario;
@@ -17,8 +16,7 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 @WebServlet(name = "ServletUsuarioLogin",
         urlPatterns = {"/api/login", "/api/logout", "/api/register-view", "/api/user/save", "/send-email"})
@@ -71,7 +69,7 @@ public class ServletUsuarioLogin extends HttpServlet {
                         session = req.getSession();
                         if(usuario instanceof BeanAlumno){
                             alumno = (BeanAlumno) usuario;
-                            session.setAttribute("usuario", alumno);
+                            session.setAttribute("user", alumno);
                             session.setAttribute("rol", alumno.getRol());
 
                         }else if(usuario instanceof BeanDocente){
@@ -133,8 +131,12 @@ public class ServletUsuarioLogin extends HttpServlet {
                 }else{
                     usuario = new BeanUsuario(nombre, ap, am , correo, contrasenia, telefono);
 
-
+                    mensaje = new DaoUsuario().save(usuario);
                 }
+
+                session = req.getSession();
+
+
 
                 if(mensaje.contains("correctamente")){
                     urlRedirect = "/api/login?result=true&message="+ URLEncoder.encode(mensaje, StandardCharsets.UTF_8);

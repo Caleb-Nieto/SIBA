@@ -65,6 +65,7 @@
                         <label for="rol">Seleccione su rol:</label>
                         <select id="rol" name="rol" required>
                             <option value="" disabled selected>Opciones...</option>
+                            <c:if test="${usuario.rol == 1}"><option value="">Bibliotecario</option></c:if>
                             <option value="alumno">Alumno</option>
                             <option value="docente">Docente</option>
                         </select>
@@ -77,9 +78,18 @@
                         </div>
                         <div class="col-md-12 mt-2 text-end">
                             <button id="enviar" type="submit" class="btn btn-success">Continuar</button>
-                            <a href="/api/login" class="btn btn-outline-danger">
-                                Cancelar
-                            </a>
+                            <c:choose>
+                                <c:when test="${rol == 1}">
+                                    <a href="/api/usuario/usuarios" class="btn btn-outline-danger">
+                                        Cancelar
+                                    </a>
+                                </c:when>
+                                <c:otherwise>
+                                    <a href="/api/login" class="btn btn-outline-danger">
+                                        Cancelar
+                                    </a>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                     </form>
                 </div>

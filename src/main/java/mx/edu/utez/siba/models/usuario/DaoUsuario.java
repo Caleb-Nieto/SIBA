@@ -60,13 +60,15 @@ public class DaoUsuario implements DaoRepository<BeanUsuario> {
 
 
     @Override
-    public List<BeanUsuario> findAll(int inicio ,int limte) {
+    public List<BeanUsuario> findAll(int inicio ,int limite) {
         List<BeanUsuario> usuarios = null;
         try {
             usuarios = new ArrayList<>();
             conn = new MySQLConnection().getConnection();
             String query = "call ver_usuarios(? , ?);";
             cstm = conn.prepareCall(query);
+            cstm.setInt(1, inicio);
+            cstm.setInt(2, limite);
             cstm.execute();
             rs = cstm.getResultSet();
             while (rs.next()) {
@@ -76,9 +78,9 @@ public class DaoUsuario implements DaoRepository<BeanUsuario> {
                 usuario.setApellido_paterno(rs.getString("apellido_paterno"));
                 usuario.setApellido_materno(rs.getString("apellido_materno"));
                 usuario.setCorreo(rs.getString("correo"));
-                usuario.setContrasenia(rs.getString("contrasenia"));
                 usuario.setTelefono(rs.getString("telefono"));
                 usuario.setRol(rs.getInt("rol"));
+
                 usuarios.add(usuario);
             }
         } catch (SQLException e) {
@@ -207,6 +209,37 @@ public class DaoUsuario implements DaoRepository<BeanUsuario> {
         return mensaje;
     }
 
+    public List<BeanUsuario> search(String palabra){
+        List<BeanUsuario> usuarios = new ArrayList<>();
+        try {
+            conn = new MySQLConnection().getConnection();
+            String query = "call buscar_usuarios(?);";
+            cstm = conn.prepareCall(query);
+            cstm.setString(1, palabra);
+            cstm.execute();
+            rs = cstm.getResultSet();
+
+           BeanUsuario usuario = new BeanUsuario();
+            if (rs.next()){
+                usuario.setId_usuario(rs.getLong("id_usuario"));
+                usuario.setNombre(rs.getString("nombre"));
+                usuario.setApellido_paterno(rs.getString("apellido_paterno"));
+                usuario.setApellido_materno(rs.getString("apellido_materno"));
+                usuario.setCorreo(rs.getString("correo"));
+                usuario.setTelefono(rs.getString("telefono"));
+                usuario.setRol(rs.getInt("rol"));
+
+                usuarios.add(usuario);
+
+            }
+
+        }catch(SQLException e){
+            Logger.getLogger(DaoUsuario.class.getName()).log(Level.SEVERE, "Error search" + e.getMessage());
+        } finally {
+            close();
+        }
+        return usuarios;
+    }
 
     @Override
     public String update(BeanUsuario object) {
@@ -222,6 +255,7 @@ public class DaoUsuario implements DaoRepository<BeanUsuario> {
             cstm.setLong(1, id);
             cstm.registerOutParameter(2, Types.VARCHAR);
             cstm.execute();
+
             String mensaje = cstm.getString(2);
             return mensaje;
         }catch(SQLException e){
@@ -231,6 +265,26 @@ public class DaoUsuario implements DaoRepository<BeanUsuario> {
             close();
         }
         return null;
+    }
+
+    public int count(){
+        int total = 0;
+        try{
+            conn = new MySQLConnection().getConnection();
+            String query = "call contar_usuarios();";
+            cstm = conn.prepareCall(query);
+            cstm.execute();
+            rs = cstm.getResultSet();
+
+            if(rs.next()){
+                total = rs.getInt(1);
+            }
+        }catch(SQLException e){
+
+        }finally {
+            close();
+        }
+        return total;
     }
 
     public void close(){

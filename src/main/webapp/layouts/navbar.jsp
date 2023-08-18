@@ -43,19 +43,11 @@
                                 </svg> &nbsp; &nbsp;Usuarios
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="...">Consultar</a></li>
+                                <li><a class="dropdown-item" href="/api/usuario/usuarios">Consultar</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item" href="...">Agregar Bibliotecario</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="..." disabled="">Agregar Alumno</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="...">Agregar Docente</a></li>
+                                <li><a class="dropdown-item" href="/api/register-view">Agregar Usuario</a></li>
                             </ul>
                         </li>
                         <!--Opciones de libros-->
@@ -153,7 +145,7 @@
                                 </svg> &nbsp; &nbsp;Usuarios
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="agregar_alumno.html" disabled>Agregar Usuario</a></li>
+                                <li><a class="dropdown-item" href="/api/register-view">Registrar usuario</a></li>
                             </ul>
                         </li>
                         <!--Opciones de libros-->
