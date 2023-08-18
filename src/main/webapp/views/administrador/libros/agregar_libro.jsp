@@ -59,8 +59,8 @@
               </div>
               <div class="col">
                 <label for="isbn" class="fw-bold">ISBN:</label>
-                <input type="text" name="isbn" id="isbn" class="form-control" placeholder="" required  maxlength="20"/>
-                <div class="invalid-feedback">Campo obligatorio</div>
+                <input type="text" name="isbn" id="isbn" class="form-control" placeholder="" required  pattern=".{13,17}"/>
+                <div class="invalid-feedback">Formato de ISBN incorrecto</div>
               </div>
             </div>
           </div>

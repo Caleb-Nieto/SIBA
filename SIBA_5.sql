@@ -150,6 +150,7 @@ SELECT u.id_usuario,
 	concat(u.nombre, ' ', u.apellido_paterno, ' ',apellido_materno ) as nombre,
     u.correo as correo,
     a.matricula,
+    a.carrera,
     concat(a.grado, '-',a.grupo) as grado_grupo,
     p.id_prestamo_libro, p.id_ejemplar, p.fecha_inicio, p.fecha_devolucion, estatus
 FROM alumnos a
@@ -184,6 +185,7 @@ SELECT u.id_usuario,
 	concat(u.nombre, ' ', u.apellido_paterno, ' ',apellido_materno ) as nombre,
     u.correo as correo,
     a.matricula,
+    a.carrera,
     concat(a.grado, '-',a.grupo) as grado_grupo,
     p.id_prestamo_sala, p.id_sala, p.fecha_inicio, p.fecha_devolucion, estatus
 FROM alumnos a
@@ -1160,20 +1162,7 @@ insert into salas values(0, 'Sala 1', '30', '1 proyector, mesas redondas, sillas
 insert into salas values(0, 'Sala 2', '10', '2 mesas cuadradas, sillas b3 c/u y 1 aire acondicionado');
 insert into salas values(0, 'Sala 3', '15', '1 mesa');
 
-INSERT INTO Autores (nombre, apellido_paterno, apellido_materno)
-VALUES ('Juan', 'Pérez', 'García');
 
-INSERT INTO Autores (nombre, apellido_paterno, apellido_materno)
-VALUES ('María', 'López', 'Martínez');
-
-INSERT INTO Autores (nombre, apellido_paterno, apellido_materno)
-VALUES ('Carlos', 'González', 'Sánchez');
-
-INSERT INTO Autores (nombre, apellido_paterno, apellido_materno)
-VALUES ('Ana', 'Rodríguez', 'Hernández');
-
-INSERT INTO Autores (nombre, apellido_paterno, apellido_materno)
-VALUES ('Luis', 'Martínez', 'Ramírez');
 
 -- Insertar registros en la tabla Ubicaciones_libros
 INSERT INTO Ubicaciones_libros (pasillo, seccion, estante)
