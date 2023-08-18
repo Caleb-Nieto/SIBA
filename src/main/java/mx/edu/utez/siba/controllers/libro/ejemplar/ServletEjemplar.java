@@ -78,7 +78,7 @@ public class ServletEjemplar extends HttpServlet {
                 libro=new BeanLibro();//declaro un nuevo libro
 
                 libro.setId(Long.parseLong("id_libro"));
-                ejemplar = new BeanEjemplar(Long.parseLong(id_ejemplar), observaciones,libro);
+                ejemplar = new BeanEjemplar(0L,Integer.parseInt(id_ejemplar), observaciones,libro);
                 mensaje = new DaoEjemplar().save(ejemplar);
                 if (mensaje.contains("correctamente")){
                     redirect = "/ejemplar/ejemplar-view?result=true&message="+ URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
@@ -93,7 +93,7 @@ public class ServletEjemplar extends HttpServlet {
                 libro=new BeanLibro();
                 libro.setId(Long.parseLong("id_libro"));
 
-                ejemplar = new BeanEjemplar(Long.parseLong(id_ejemplar),observaciones, libro);
+                ejemplar = new BeanEjemplar(0L,Integer.parseInt(id_ejemplar), observaciones,libro);
                 mensaje = new DaoEjemplar().update(ejemplar);
                 if (mensaje.contains("correctamente")){
                     redirect = "/api/ejemplar/ejemplares?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);

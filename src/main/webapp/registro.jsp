@@ -3,8 +3,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Registrarse</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/Indexstyle.css">
+    <c:choose>
+        <c:when test="${rol == 1}">
+            <title>Registrar usuario</title>
+            <jsp:include page="${pageContext.request.contextPath}/layouts/navbar.jsp"/>
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/mainStyle.css">
+
+        </c:when>
+        <c:otherwise>
+            <title>Registrarse</title>
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/Indexstyle.css">
+        </c:otherwise>
+    </c:choose>
     <jsp:include page="${pageContext.request.contextPath}/layouts/header.jsp"/>
 </head>
 <body id="index">
@@ -65,7 +75,7 @@
                         <label for="rol">Seleccione su rol:</label>
                         <select id="rol" name="rol" required>
                             <option value="" disabled selected>Opciones...</option>
-                            <c:if test="${usuario.rol == 1}"><option value="">Bibliotecario</option></c:if>
+                            <c:if test="${rol == 1}"><option value="">Bibliotecario</option></c:if>
                             <option value="alumno">Alumno</option>
                             <option value="docente">Docente</option>
                         </select>

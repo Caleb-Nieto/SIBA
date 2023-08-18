@@ -93,32 +93,48 @@ public class DaoUsuario implements DaoRepository<BeanUsuario> {
     }
 
     @Override
-    public BeanUsuario findOne(Long id) {
+    public BeanUsuario findOne(Long id_usuario) {
         try {
             conn = new MySQLConnection().getConnection();
-            String query = "call encontrar_usuario(?);";
+            String query = "call get_usuario(?);";
             cstm = conn.prepareCall(query);
-            cstm.setLong(1, id);
+            cstm.setLong(1, id_usuario);
             cstm.execute();
             rs = cstm.getResultSet();
-            BeanUsuario usuario = new BeanUsuario();
+
             if (rs.next()){
-                usuario.setId_usuario(rs.getLong("id_usuario"));
-                usuario.setNombre(rs.getString("nombre"));
-                usuario.setApellido_paterno(rs.getString("apellido_paterno"));
-                usuario.setApellido_materno(rs.getString("apellido_materno"));
-                usuario.setCorreo(rs.getString("correo"));
-                usuario.setContrasenia(rs.getString("contrasenia"));
-                usuario.setTelefono(rs.getString("telefono"));
-                usuario.setRol(rs.getInt("rol"));
+                Long id = rs.getLong("id_usuario");
+                String nombre = rs.getString("nombre");
+                String ap = rs.getString("apellido_paterno");
+                String am = rs.getString("apellido_materno");
+                String tel = rs.getString("telefono");
+                int rol = rs.getInt("rol");
+
+
+                if(rol == 4){
+                    String matricula = rs.getString("matricula");
+                    String carrera = rs.getString("carrera");
+                    int grado = rs.getInt("grado");
+                    String grupo = rs.getString("grupo");
+
+                    return new BeanAlumno(id, nombre, ap, am, null, null, tel, rol, matricula, carrera, grado, grupo);
+                }else if(rol == 3){
+                    String no = rs.getString("no_trabajador");
+                    String division = rs.getString("division");
+
+                    return new BeanDocente(id, nombre, ap, am, null, null, tel, rol, no, division);
+                }else{
+                    return new BeanUsuario(id, nombre, ap, am, null, null, tel, rol);
+                }
             }
-            return usuario;
-        }catch(SQLException e){
-            Logger.getLogger(DaoUsuario.class.getName()).log(Level.SEVERE, "Error findOne" + e.getMessage());
-        } finally {
+            return null;
+        }catch (SQLException e){
+            Logger.getLogger(DaoUsuario.class.getName())
+                    .log(Level.SEVERE, "Error LoadUser " + e.getMessage());
+            return null;
+        }finally{
             close();
         }
-        return null;
     }
 
     @Override

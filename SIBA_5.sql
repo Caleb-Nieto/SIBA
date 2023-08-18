@@ -833,6 +833,21 @@ FROM libros l
 end; $$
 
 delimiter $$
+create procedure get_usuario(_id int)
+begin
+    DECLARE r int;
+    SELECT rol INTO r FROM usuarios WHERE id_usuario = _id;
+
+    IF r = 1 OR r = 2 THEN
+    SELECT id_usuario, nombre, apellido_paterno, apellido_materno, telefono, rol FROM usuarios WHERE id_usuario = _id;
+    ELSEIF r = 3 THEN
+    SELECT u.id_usuario, u.nombre, u.apellido_paterno, u.apellido_materno, u.telefono, u.rol, d.* FROM usuarios u INNER JOIN docentes d ON u.id_usuario = d.id_usuario WHERE u.id_usuario = _id;
+    ELSEIF r = 4 THEN
+    SELECT u.id_usuario, u.nombre, u.apellido_paterno, u.apellido_materno, u.telefono, u.rol, a.* FROM usuarios u INNER JOIN alumnos a ON u.id_usuario = a.id_usuario WHERE u.id_usuario = _id;
+    END IF;
+end;$$
+
+delimiter $$
 create procedure ver_usuarios(inicio int, limite int)
 begin
 select id_usuario, nombre, apellido_paterno, apellido_materno, correo, telefono, rol from usuarios order by nombre, apellido_paterno,apellido_materno limit inicio, limite;

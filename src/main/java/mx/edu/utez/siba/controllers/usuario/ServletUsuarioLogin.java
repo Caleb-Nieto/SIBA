@@ -74,11 +74,11 @@ public class ServletUsuarioLogin extends HttpServlet {
 
                         }else if(usuario instanceof BeanDocente){
                             docente = (BeanDocente) usuario;
-                            session.setAttribute("usuario", docente);
+                            session.setAttribute("user", docente);
                             session.setAttribute("rol", docente.getRol());
 
                         }else{
-                            session.setAttribute("usuario", usuario);
+                            session.setAttribute("user", usuario);
                             session.setAttribute("rol", usuario.getRol());
 
                         }

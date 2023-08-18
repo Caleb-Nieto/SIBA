@@ -59,6 +59,7 @@
                     <div class="card-header" style="background: #045c4a; color: white;">
                         <h5>
                             <c:choose>
+                                <c:when test="${usuario.rol == 1}">Admin</c:when>
                                 <c:when test="${usuario.rol == 2}">Bibliotecario</c:when>
                                 <c:when test="${usuario.rol == 3}">Docente</c:when>
                                 <c:when test="${usuario.rol == 4}">Alumno</c:when>
@@ -73,7 +74,7 @@
                     <div class="card-footer text-center" style="background: #045c4a; color: white;">
                         <div class="row">
                             <div class="col">
-                                <form method="get" action="">
+                                <form method="get" action="/api/usuario/usuario-view-update">
                                     <input hidden value="${usuario.id_usuario}" name="id_usuario"/>
                                     <button type="submit" class="btn btn-primary btn-sm">
                                         Editar

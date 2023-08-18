@@ -5,6 +5,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import mx.edu.utez.siba.models.usuario.BeanAlumno;
+import mx.edu.utez.siba.models.usuario.BeanDocente;
 import mx.edu.utez.siba.models.usuario.BeanUsuario;
 import mx.edu.utez.siba.models.usuario.DaoUsuario;
 
@@ -22,6 +24,8 @@ public class ServletUsuario extends HttpServlet {
     private String action;
     private String redirect;
     private String id_usuario;
+    BeanAlumno alumno;
+    BeanDocente docente;
     private String mensaje;
     private BeanUsuario usuario;
     private List<BeanUsuario> usuarios;
@@ -58,9 +62,22 @@ public class ServletUsuario extends HttpServlet {
 
                 usuario = new DaoUsuario().findOne(Long.parseLong(id_usuario));
 
+
                 if (usuario != null){
-                    request.setAttribute("usuario", usuario);
-                    redirect = "/views/administrador/salas/editar_sala.jsp";
+
+                    if(usuario instanceof BeanAlumno){
+                        alumno = (BeanAlumno) usuario;
+                        request.setAttribute("usuario", alumno);
+
+                    }else if(usuario instanceof BeanDocente){
+                        docente = (BeanDocente) usuario;
+                        request.setAttribute("usuario", docente);
+
+                    }else {
+                        request.setAttribute("usuario", usuario);
+                    }
+
+                    redirect = "/views/administrador/usuarios/editar_usuario.jsp";
                 } else{
                     redirect = "/api/usuario/usuarios?result=false&message=¡Error! Acción no realizada correctamente";
                 }
