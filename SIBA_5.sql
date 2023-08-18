@@ -1,7 +1,7 @@
 create database SIBA;
 use SIBA;
 
-CREATE TABLE Usuarios(
+CREATE TABLE usuarios(
     id_usuario INT auto_increment,
     nombre VARCHAR(50) NOT NULL,
     apellido_paterno VARCHAR(50) NOT NULL,
@@ -13,14 +13,14 @@ CREATE TABLE Usuarios(
     PRIMARY KEY(id_usuario)
 );
 
-CREATE TABLE Docentes(
+CREATE TABLE docentes(
 	no_trabajador varchar(30) primary key,
     division varchar(50) not null,
     id_usuario int not null, 
     foreign key (id_usuario) references usuarios(id_usuario)
 );
 
-CREATE TABLE Alumnos(
+CREATE TABLE alumnos(
 	matricula varchar(30) primary key,
 	carrera varchar(200) not null,
     grado int not null,
@@ -29,7 +29,7 @@ CREATE TABLE Alumnos(
     foreign key (id_usuario) references usuarios(id_usuario)
 );
 
-CREATE TABLE Ubicaciones_libros(
+CREATE TABLE ubicaciones_libros(
 	id INTEGER AUTO_INCREMENT,
     pasillo INT NOT NULL,
     seccion INT NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE Ubicaciones_libros(
     PRIMARY KEY (id)
 );
 
-CREATE TABLE Libros (
+CREATE TABLE libros (
 	id_libro INTEGER AUTO_INCREMENT,
 	titulo VARCHAR(50) NOT NULL,
     isbn VARCHAR(17) NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE libros_img(
     foreign key (id_libro) references libros(id_libro)
 );
   
-CREATE TABLE Autores (
+CREATE TABLE autores (
   id_autor INT AUTO_INCREMENT,
   nombre VARCHAR(50) NOT NULL,
   apellido_paterno VARCHAR(50),
@@ -71,18 +71,18 @@ CREATE TABLE libros_autores(
     FOREIGN KEY (id_libro)
     REFERENCES Libros (id_libro),
     FOREIGN KEY (id_autor)
-    REFERENCES Autores (id_autor)
+    REFERENCES autores (id_autor)
 );
-CREATE TABLE Ejemplares (
+CREATE TABLE ejemplares (
     id_ejemplar INT auto_increment,
     ejemplar int not null,
     observaciones VARCHAR(255) NULL,
     id_libro INT NOT NULL,
     PRIMARY KEY (id_ejemplar),
-    FOREIGN KEY (id_libro) REFERENCES Libros (id_libro)
+    FOREIGN KEY (id_libro) REFERENCES libros (id_libro)
 );
 
-CREATE TABLE Salas(
+CREATE TABLE salas(
     id_sala INT auto_increment,
     nombre VARCHAR(50) NOT NULL,
     capacidad int NOT NULL,
@@ -90,7 +90,7 @@ CREATE TABLE Salas(
     PRIMARY KEY(id_sala)
 );
 
-CREATE TABLE Prestamos_Libros(
+CREATE TABLE prestamos_libros(
     id_prestamo_libro INT AUTO_INCREMENT,
     id_ejemplar INT NOT NULL,
     id_usuario INT NOT NULL,
@@ -98,11 +98,11 @@ CREATE TABLE Prestamos_Libros(
     fecha_devolucion TIMESTAMP NOT NULL,
     estatus ENUM('Activo', 'Finalizado') NOT NULL DEFAULT 'Activo',
     PRIMARY KEY(id_prestamo_libro),
-    FOREIGN KEY (id_ejemplar) REFERENCES Ejemplares (id_ejemplar),
-    FOREIGN KEY (id_usuario) REFERENCES Usuarios (id_usuario)
+    FOREIGN KEY (id_ejemplar) REFERENCES ejemplares (id_ejemplar),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario)
 );
 
-CREATE TABLE Prestamos_Salas(
+CREATE TABLE prestamos_salas(
     id_prestamo_sala INT AUTO_INCREMENT,
     id_sala INT NOT NULL,
     id_usuario INT NOT NULL,
@@ -110,11 +110,11 @@ CREATE TABLE Prestamos_Salas(
     fecha_devolucion TIMESTAMP NOT NULL,
     estatus ENUM('Activo', 'Finalizado') NOT NULL DEFAULT 'Activo',
     PRIMARY KEY(id_prestamo_sala),
-    FOREIGN KEY (id_sala) REFERENCES Salas (id_sala),
-    FOREIGN KEY (id_usuario) REFERENCES Usuarios (id_usuario)
+    FOREIGN KEY (id_sala) REFERENCES salas (id_sala),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario)
 );
 
-CREATE TABLE Change_Log (
+CREATE TABLE change_Log (
     id_log integer auto_increment primary key,
     tabla varchar(20) not null,
     informe varchar(255) not null,
@@ -122,7 +122,7 @@ CREATE TABLE Change_Log (
     fecha timestamp not null
 );
 
-CREATE VIEW Prestamos_Libros_Usuario AS
+CREATE VIEW prestamos_libros_usuario AS
 SELECT u.id_usuario, 
 	concat(u.nombre, ' ', u.apellido_paterno, ' ',apellido_materno ) as nombre,
     u.correo as correo,
@@ -446,13 +446,13 @@ FOR EACH ROW
 BEGIN
 	declare rol_ varchar(20);
 	case
-	    when rol = 1 then set rol_ = 'Administrador';
-        when rol = 2 then set rol_ = 'Bibliotecario';
-		when rol = 3 then set rol_ = 'Docente';
-		when rol = 4 then set rol_ = 'Alumno';
+	    when old.rol = 1 then set rol_ = 'Administrador';
+        when old.rol = 2 then set rol_ = 'Bibliotecario';
+		when old.rol = 3 then set rol_ = 'Docente';
+		when old.rol = 4 then set rol_ = 'Alumno';
 	end case;
-    INSERT INTO change_log (id_log, tabla, informe, usuario, fecha) VALUES (0, 'Usuarios', 
-    CONCAT('Se ha actualizado un usuario con id: ', OLD.id_usuario, 
+    INSERT INTO change_log (id_log, tabla, informe, usuario, fecha) VALUES (0, 'Usuarios',
+    CONCAT('Se ha actualizado un usuario con id: ', OLD.id_usuario,
            ',Nombre anterior: ', OLD.Nombre,' ',old.apellido_paterno,' ',old.apellido_materno,
            ', Nombre actual: ', new.Nombre,' ',new.apellido_paterno,' ',new.apellido_materno,
            ', Rol: ', rol_),
@@ -537,6 +537,34 @@ BEGIN
     END CASE;
     SET autocommit = 1;
 END;$$
+
+delimiter $$
+create procedure actualizar_usuario_alumno(id int, _carrera varchar(100), _grado int, _grupo varchar(100))
+begin
+    set autocommit = 0;
+    start transaction;
+    UPDATE alumnos set carrera =_carrera, grado = _grado , grupo = _grupo where id_usuario = id;
+    COMMIT;
+    set autocommit = 1;
+end; $$
+
+delimiter $$
+create procedure actualizar_usuario(id int, _nombre varchar(50), ap varchar(50), am varchar(50), _telefono varchar(12),out mensaje varchar(255))
+begin
+    DECLARE _correo varchar(100);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SET mensaje = 'Error';
+    END;
+    select correo into _correo from usuarios where id_usuario = id;
+    set autocommit = 0;
+    start transaction;
+    UPDATE usuarios set nombre =_nombre, apellido_paterno = ap, apellido_materno = am, telefono = _telefono where id_usuario = id;
+    SET mensaje = concat('El ususario con correo: ', _correo, ' se ha actualizado correctamente');
+    COMMIT;
+    set autocommit = 1;
+end; $$
 
 DELIMITER $$
 CREATE PROCEDURE Eliminar_ubicacion (_id int, out mensaje varchar(255))
@@ -658,7 +686,7 @@ BEGIN
         SET mensaje =  'El libro se eliminó correctamente';
         COMMIT;
     ELSE
-        SET mensaje =  'Uso incorrecto';
+        SET mensaje =  'Primero debes eliminar los ejemplares de este libro';
         ROLLBACK;
     END IF;
     SET autocommit = 1;
@@ -839,11 +867,11 @@ begin
     SELECT rol INTO r FROM usuarios WHERE id_usuario = _id;
 
     IF r = 1 OR r = 2 THEN
-    SELECT id_usuario, nombre, apellido_paterno, apellido_materno, telefono, rol FROM usuarios WHERE id_usuario = _id;
+    SELECT id_usuario, nombre, apellido_paterno, apellido_materno, correo, telefono, rol FROM usuarios WHERE id_usuario = _id;
     ELSEIF r = 3 THEN
-    SELECT u.id_usuario, u.nombre, u.apellido_paterno, u.apellido_materno, u.telefono, u.rol, d.* FROM usuarios u INNER JOIN docentes d ON u.id_usuario = d.id_usuario WHERE u.id_usuario = _id;
+    SELECT u.id_usuario, u.nombre, u.apellido_paterno, u.apellido_materno, u.correo, u.telefono, u.rol, d.* FROM usuarios u INNER JOIN docentes d ON u.id_usuario = d.id_usuario WHERE u.id_usuario = _id;
     ELSEIF r = 4 THEN
-    SELECT u.id_usuario, u.nombre, u.apellido_paterno, u.apellido_materno, u.telefono, u.rol, a.* FROM usuarios u INNER JOIN alumnos a ON u.id_usuario = a.id_usuario WHERE u.id_usuario = _id;
+    SELECT u.id_usuario, u.nombre, u.apellido_paterno, u.apellido_materno,  u.correo, u.telefono, u.rol, a.* FROM usuarios u INNER JOIN alumnos a ON u.id_usuario = a.id_usuario WHERE u.id_usuario = _id;
     END IF;
 end;$$
 
@@ -1213,7 +1241,7 @@ VALUES (2, 1, 'E');
 delimiter $$
 create procedure contar_ejemplares()
 begin
-select count(*) as total from Ejemplares;
+select count(*) as total from ejemplares;
 end; $$
 
 
@@ -1248,7 +1276,7 @@ delimiter $$
 create procedure buscar_ejemplar(palabra varchar(100), out mensaje VARCHAR(255))
 begin
         if not exists (select * from ejemplares where concat(observaciones) like concat('%', palabra, '%') or ejemplar like palabra) then
-        set mensaje = "No hay un registro con esas caracteristicas";
+        set mensaje = 'No hay un registro con esas caracteristicas';
 else
 select * from ejemplares where concat(observaciones) like concat('%', palabra, '%') or ejemplar like palabra;
 end if;
@@ -1302,6 +1330,15 @@ END IF;
     SET autocommit = 1;
 end;$$
 
+delimiter $$
+create procedure actualizar_usuario_docente(id int, _division varchar(50))
+begin
+    set autocommit = 0;
+    start transaction;
+    UPDATE docentes set division = _division where id_usuario = id;
+    COMMIT;
+    set autocommit = 1;
+end; $$
 
 DELIMITER $$
 CREATE PROCEDURE actualizar_ejemplar (_ejemplar INT,_observaciones VARCHAR(255),OUT mensaje VARCHAR(255))

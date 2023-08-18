@@ -7,6 +7,11 @@ public class BeanDocente extends BeanUsuario {
     public BeanDocente() {
     }
 
+    public BeanDocente(Long id_usuario, String nombre, String apellido_paterno, String apellido_materno, String telefono, String division) {
+        super(id_usuario, nombre, apellido_paterno, apellido_materno, telefono);
+        this.division = division;
+    }
+
     public BeanDocente(Long id_usuario, String nombre, String apellido_paterno, String apellido_materno, String correo, String contrasenia, String telefono, int rol, String no_trabajador, String division) {
         super(id_usuario, nombre, apellido_paterno, apellido_materno, correo, contrasenia, telefono, rol);
         this.no_trabajador = no_trabajador;

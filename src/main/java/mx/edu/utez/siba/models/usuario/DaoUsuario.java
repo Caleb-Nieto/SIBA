@@ -1,5 +1,8 @@
 package mx.edu.utez.siba.models.usuario;
 
+
+import mx.edu.utez.siba.models.libro.DaoLibro;
+
 import mx.edu.utez.siba.models.repository.DaoRepository;
 import mx.edu.utez.siba.utils.MySQLConnection;
 
@@ -107,6 +110,7 @@ public class DaoUsuario implements DaoRepository<BeanUsuario> {
                 String nombre = rs.getString("nombre");
                 String ap = rs.getString("apellido_paterno");
                 String am = rs.getString("apellido_materno");
+                String correo = rs.getString("correo");
                 String tel = rs.getString("telefono");
                 int rol = rs.getInt("rol");
 
@@ -117,14 +121,14 @@ public class DaoUsuario implements DaoRepository<BeanUsuario> {
                     int grado = rs.getInt("grado");
                     String grupo = rs.getString("grupo");
 
-                    return new BeanAlumno(id, nombre, ap, am, null, null, tel, rol, matricula, carrera, grado, grupo);
+                    return new BeanAlumno(id, nombre, ap, am, correo, null, tel, rol, matricula, carrera, grado, grupo);
                 }else if(rol == 3){
                     String no = rs.getString("no_trabajador");
                     String division = rs.getString("division");
 
-                    return new BeanDocente(id, nombre, ap, am, null, null, tel, rol, no, division);
+                    return new BeanDocente(id, nombre, ap, am, correo, null, tel, rol, no, division);
                 }else{
-                    return new BeanUsuario(id, nombre, ap, am, null, null, tel, rol);
+                    return new BeanUsuario(id, nombre, ap, am, correo, null, tel, rol);
                 }
             }
             return null;
@@ -258,9 +262,88 @@ public class DaoUsuario implements DaoRepository<BeanUsuario> {
     }
 
     @Override
-    public String update(BeanUsuario object) {
-        return null;
+    public String update(BeanUsuario usuario){
+        String mensaje = "algo falla";
+        try{
+            conn = new MySQLConnection().getConnection();
+            String query = "call actualizar_usuario(?, ?, ?, ?, ?, ?);";
+            cstm = conn.prepareCall(query);
+            cstm.setLong(1, usuario.getId_usuario());
+            cstm.setString(2, usuario.getNombre());
+            cstm.setString(3, usuario.getApellido_paterno());
+            cstm.setString(4, usuario.getApellido_materno());
+            cstm.setString(5, usuario.getTelefono());
+
+
+
+            cstm.registerOutParameter(6, Types.VARCHAR);
+            cstm.execute();
+
+
+            mensaje = cstm.getString(6);
+
+        }catch (SQLException e){
+            Logger.getLogger(DaoLibro.class.getName())
+                    .log(Level.SEVERE, "Error Update " + e.getMessage());
+        }finally {
+            close();
+        }
+
+
+        if(usuario instanceof BeanDocente){
+            BeanDocente docente = (BeanDocente) usuario;
+
+            updateDocente(docente.getId_usuario(), docente.getDivision());
+        }else if(usuario instanceof BeanAlumno){
+            BeanAlumno alumno = (BeanAlumno) usuario;
+
+            updateAlumno(alumno.getId_usuario(), alumno.getCarrera(), alumno.getGrado(), alumno.getGrupo());
+        }
+
+
+        return mensaje;
     }
+
+    private void updateDocente(Long id_usuario, String division){
+        String mensaje = "algo falla";
+        try{
+            conn = new MySQLConnection().getConnection();
+            String query = "call actualizar_usuario_docente(?, ?);";
+            cstm = conn.prepareCall(query);
+            cstm.setLong(1, id_usuario);
+            cstm.setString(2, division);
+
+            cstm.execute();
+
+        }catch (SQLException e){
+            Logger.getLogger(DaoLibro.class.getName())
+                    .log(Level.SEVERE, "Error UpdateDocente " + e.getMessage());
+        }finally {
+            close();
+        }
+    }
+
+    private void updateAlumno(Long id_usuario, String carrera, int grado, String grupo){
+        String mensaje = "algo falla";
+        try{
+            conn = new MySQLConnection().getConnection();
+            String query = "call actualizar_usuario_alumno(?, ?, ?, ?);";
+            cstm = conn.prepareCall(query);
+            cstm.setLong(1, id_usuario);
+            cstm.setString(2, carrera);
+            cstm.setInt(3, grado);
+            cstm.setString(4, grupo);
+
+            cstm.execute();
+
+        }catch (SQLException e){
+            Logger.getLogger(DaoLibro.class.getName())
+                    .log(Level.SEVERE, "Error UpdateAlumno " + e.getMessage());
+        }finally {
+            close();
+        }
+    }
+
 
     @Override
     public String delete(Long id) {

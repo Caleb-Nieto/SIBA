@@ -14,6 +14,15 @@ public class BeanUsuario {
     public BeanUsuario() {
     }
 
+
+    public BeanUsuario(Long id_usuario, String nombre, String apellido_paterno, String apellido_materno, String telefono) {
+        this.id_usuario = id_usuario;
+        this.nombre = nombre;
+        this.apellido_paterno = apellido_paterno;
+        this.apellido_materno = apellido_materno;
+        this.telefono = telefono;
+    }
+
     public BeanUsuario(Long id_usuario, String nombre, String apellido_paterno, String apellido_materno, String correo, String contrasenia, String telefono, int rol) {
         this.id_usuario = id_usuario;
         this.nombre = nombre;

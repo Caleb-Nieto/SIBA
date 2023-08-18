@@ -17,7 +17,8 @@
           <h5>Actualizar usuario</h5>
         </div>
         <div class="card-body">
-          <form class="row g-3 needs-validation" id="register-form" novalidate action="/api/user/save" method="post">
+          <form class="row g-3 needs-validation" id="register-form" novalidate action="/api/usuario/update" method="post">
+            <input hidden name="rol" value="${usuario.rol}">
             <input hidden name="id_usuario" value="${usuario.id_usuario}">
             <div class="col-md-4">
               <label for="validationCustom01" class="fw-bold">Nombre(s):</label>
@@ -42,7 +43,7 @@
             </div>
             <div class="col-md-7">
               <label for="validationCustom04" class="fw-bold">Correo electrónico:</label>
-              <input type="email" class="form-control" id="validationCustom04" placeholder="example@utez.edu.com" disabled value="${usuario.apellido_materno}"  name="correo" maxlength="40" required>
+              <input type="email" class="form-control" id="validationCustom04" placeholder="example@utez.edu.com"  value="${usuario.correo}"  name="correo" maxlength="40" disabled>
               <div class="invalid-feedback">
                 Verifique la extensión del correo
               </div>
@@ -57,8 +58,8 @@
             <div class="col-md-2">
             </div>
             <!--Botones de opciones-->
-            <label for="rol">Seleccione su rol:</label>
-            <select id="rol" name="rol" required>
+            <label for="rol">Rol:</label>
+            <select id="rol" name="rol">
               <c:choose>
                 <c:when test="${usuario.rol == 2}">
                   <option value="" selected>Bibliotecario</option>
@@ -79,7 +80,7 @@
                     <div class="card card-body alumno">
                       <div class="col-12">
                         <label for="validationCustom07" class="fw-bold">Matrícula:</label>
-                        <input type="text" class="form-control" id="validationCustom07" value="${usuario.matricula}" name="matricula" maxlength="20" required>
+                        <input type="text" class="form-control" id="validationCustom07" value="${usuario.matricula}" name="matricula" maxlength="20" disabled>
                         <div class="invalid-feedback">
                           Campo obligatorio
                         </div>
