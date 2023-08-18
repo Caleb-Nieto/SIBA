@@ -25,6 +25,15 @@ public class BeanUsuario {
         this.rol = rol;
     }
 
+    public BeanUsuario(String nombre, String apellido_paterno, String apellido_materno, String correo, String contrasenia, String telefono) {
+        this.nombre = nombre;
+        this.apellido_paterno = apellido_paterno;
+        this.apellido_materno = apellido_materno;
+        this.correo = correo;
+        this.contrasenia = contrasenia;
+        this.telefono = telefono;
+    }
+
     public Long getId_usuario() {
         return id_usuario;
     }

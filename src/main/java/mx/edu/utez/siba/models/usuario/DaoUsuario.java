@@ -34,10 +34,11 @@ public class DaoUsuario implements DaoRepository<BeanUsuario> {
 
                 if(rol == 4){
                     String matricula = rs.getString("matricula");
+                    String carrera = rs.getString("carrera");
                     int grado = rs.getInt("grado");
                     String grupo = rs.getString("grupo");
 
-                    return new BeanAlumno(id, nombre, ap, am, null, null, tel, rol, matricula, grado, grupo);
+                    return new BeanAlumno(id, nombre, ap, am, null, null, tel, rol, matricula, carrera, grado, grupo);
                 }else if(rol == 3){
                     String no = rs.getString("no_trabajador");
                     String division = rs.getString("division");
@@ -120,9 +121,11 @@ public class DaoUsuario implements DaoRepository<BeanUsuario> {
 
     @Override
     public String save(BeanUsuario object) {
+
+        String mensaje = ":(";
         try{
             conn = new MySQLConnection().getConnection();
-            String query = "call Insertar_Usuario(?, ?, ?, ?, ?, ?, ?, ?);";
+            String query = "call insertar_bibliotecario(?, ?, ?, ?, ?, ?, ?);";
             cstm = conn.prepareCall(query);
             cstm.setString(1, object.getNombre());
             cstm.setString(2, object.getApellido_paterno());
@@ -130,19 +133,80 @@ public class DaoUsuario implements DaoRepository<BeanUsuario> {
             cstm.setString(4, object.getCorreo());
             cstm.setString(5, object.getContrasenia());
             cstm.setString(6, object.getTelefono());
-            cstm.setInt(7, object.getRol());
-            cstm.registerOutParameter(8, Types.VARCHAR);
+            cstm.registerOutParameter(7, Types.VARCHAR);
             cstm.execute();
-            String mensaje = cstm.getString(8);
-            return mensaje;
+
+            mensaje = cstm.getString(7);
         }catch(SQLException e){
             Logger.getLogger(DaoUsuario.class.getName())
-                    .log(Level.SEVERE, "Error save " + e.getMessage());
+                    .log(Level.SEVERE, "Error saveBiblio " + e.getMessage());
         }finally{
             close();
         }
-        return null;
+        return mensaje;
     }
+    public String saveDocente(BeanDocente object) {
+
+        String mensaje = ":(";
+        try{
+            conn = new MySQLConnection().getConnection();
+            String query = "call insertar_docente(?, ?, ?, ?, ?, ?, ?, ?, ?);";
+            cstm = conn.prepareCall(query);
+            cstm.setString(1, object.getNombre());
+            cstm.setString(2, object.getApellido_paterno());
+            cstm.setString(3, object.getApellido_materno());
+            cstm.setString(4, object.getCorreo());
+            cstm.setString(5, object.getContrasenia());
+            cstm.setString(6, object.getTelefono());
+            cstm.setString(7, object.getNo_trabajador());
+            cstm.setString(8, object.getDivision());
+
+
+            cstm.registerOutParameter(9, Types.VARCHAR);
+            cstm.execute();
+
+            mensaje = cstm.getString(9);
+        }catch(SQLException e){
+            Logger.getLogger(DaoUsuario.class.getName())
+                    .log(Level.SEVERE, "Error saveDocente " + e.getMessage());
+        }finally{
+            close();
+        }
+        return mensaje;
+    }
+
+    public String saveAlumno(BeanAlumno object) {
+
+        String mensaje = ":(";
+        try{
+            conn = new MySQLConnection().getConnection();
+            String query = "call insertar_alumno(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+            cstm = conn.prepareCall(query);
+            cstm.setString(1, object.getNombre());
+            cstm.setString(2, object.getApellido_paterno());
+            cstm.setString(3, object.getApellido_materno());
+            cstm.setString(4, object.getCorreo());
+            cstm.setString(5, object.getContrasenia());
+            cstm.setString(6, object.getTelefono());
+            cstm.setString(7, object.getMatricula());
+            cstm.setString(8, object.getCarrera());
+            cstm.setInt(9, object.getGrado());
+            cstm.setString(10, object.getGrupo());
+
+
+            cstm.registerOutParameter(11, Types.VARCHAR);
+            cstm.execute();
+
+            mensaje = cstm.getString(11);
+        }catch(SQLException e){
+            Logger.getLogger(DaoUsuario.class.getName())
+                    .log(Level.SEVERE, "Error saveAlumno " + e.getMessage());
+        }finally{
+            close();
+        }
+        return mensaje;
+    }
+
 
     @Override
     public String update(BeanUsuario object) {

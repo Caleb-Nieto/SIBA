@@ -13,6 +13,12 @@ public class BeanDocente extends BeanUsuario {
         this.division = division;
     }
 
+    public BeanDocente(String nombre, String apellido_paterno, String apellido_materno, String correo, String contrasenia, String telefono, String no_trabajador, String division) {
+        super(nombre, apellido_paterno, apellido_materno, correo, contrasenia, telefono);
+        this.no_trabajador = no_trabajador;
+        this.division = division;
+    }
+
     public String getNo_trabajador() {
         return no_trabajador;
     }

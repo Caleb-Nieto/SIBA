@@ -14,16 +14,17 @@ CREATE TABLE Usuarios(
 );
 
 CREATE TABLE Docentes(
-	no_trabajador varchar(100) primary key,
-    division varchar(100) not null,
+	no_trabajador varchar(30) primary key,
+    division varchar(50) not null,
     id_usuario int not null, 
     foreign key (id_usuario) references usuarios(id_usuario)
 );
 
 CREATE TABLE Alumnos(
-	matricula varchar(100) primary key,
+	matricula varchar(30) primary key,
+	carrera varchar(200) not null,
     grado int not null,
-    grupo varchar(100) not null,
+    grupo varchar(2) not null,
     id_usuario int not null,
     foreign key (id_usuario) references usuarios(id_usuario)
 );
@@ -247,6 +248,8 @@ CREATE INDEX idx_prestamoLibro_inicio_fin ON PRESTAMOS_LIBROS (fecha_inicio, fec
 
 CREATE INDEX idx_prestamoSala_inicio_fin ON PRESTAMOS_SALAS (fecha_inicio, fecha_devolucion);
 
+CREATE INDEX idx_carrera_alumno ON alumnos (carrera);
+
 DELIMITER $$
 CREATE TRIGGER after_insert_ubicaciones_libros AFTER INSERT ON Ubicaciones_libros
 FOR EACH ROW 
@@ -441,6 +444,7 @@ FOR EACH ROW
 BEGIN
 	declare rol_ varchar(20);
 	case
+	     when rol = 0 then set rol_ = 'Desactivado';
 	    when rol = 1 then set rol_ = 'Administrador';
         when rol = 2 then set rol_ = 'Bibliotecario';
 		when rol = 3 then set rol_ = 'Docente';
@@ -661,66 +665,35 @@ END;$$
 
 
 DELIMITER $$
-CREATE PROCEDURE Insertar_Usuario (
+CREATE PROCEDURE insertar_bibliotecario (
     _nombre VARCHAR(50),
     _apellido_paterno VARCHAR(50),
     _apellido_materno VARCHAR(50),
     _correo VARCHAR(100),
     _contrasenia varchar(100),
     _telefono VARCHAR(12),
-    _no_trabajador varchar(100),
-    _division varchar(100),
-    _matricula varchar(100),
-    _grado int,
-    _grupo varchar(100),
-    OUT mensaje VARCHAR(255)
+    OUT mensaje varchar(100)
 )
 BEGIN
     DECLARE contrasenia_encrypt varbinary(128);
+
     DECLARE exit HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
         SET mensaje = 'Se produjo una excepción durante la transacción';
     END;
-
     SET autocommit = 0;
     START TRANSACTION;
-
-    IF LENGTH(_contrasenia) < 8 THEN
-        SET mensaje = 'La contraseña debe tener al menos 8 caracteres';
-        ROLLBACK;
-    ELSEIF LENGTH(_contrasenia) > 20 THEN
-        SET mensaje = 'La contraseña es demasiado larga';
-        ROLLBACK;
-    ELSEIF EXISTS (SELECT * FROM Usuarios WHERE correo = _correo) THEN
-        SET mensaje = 'El correo ingresado ya se encuentra ligado a una cuenta';
+    IF EXISTS (SELECT * FROM Usuarios WHERE correo = _correo) THEN
+        SET mensaje = CONCAT('El correo ', _correo  ,' ya se encuentra ligado a una cuenta');
         ROLLBACK;
     ELSE
         SET contrasenia_encrypt = aes_encrypt(_contrasenia, 'A4E7C6AE4013276DEABC1BE4F9C65A6DC382F317E0CB81497ABA26915CDE5B66');
-
-        IF (_no_trabajador IS NULL AND _division IS NULL AND _matricula IS NULL AND _grado IS NULL AND _grupo IS NULL) THEN
             INSERT INTO Usuarios (nombre, apellido_paterno, apellido_materno, correo, contrasenia, telefono, rol)
             VALUES (_nombre, _apellido_paterno, _apellido_materno, _correo, contrasenia_encrypt, _telefono, 2);
-            SET mensaje = 'Usuario Bibliotecario registrado';
-
-        ELSEIF (_matricula IS NULL AND _grado IS NULL AND _grupo IS NULL) THEN
-            INSERT INTO Usuarios (nombre, apellido_paterno, apellido_materno, correo, contrasenia, telefono, rol)
-            VALUES (_nombre, _apellido_paterno, _apellido_materno, _correo, contrasenia_encrypt, _telefono, 3);
-            INSERT INTO Docentes (no_trabajador, division, id_usuario)
-            VALUES (_no_trabajador, _division, last_insert_id());
-            SET mensaje = 'Usuario Docente registrado';
-
-        ELSEIF (_no_trabajador IS NULL AND _division IS NULL) THEN
-            INSERT INTO Usuarios (nombre, apellido_paterno, apellido_materno, correo, contrasenia, telefono, rol)
-            VALUES (_nombre, _apellido_paterno, _apellido_materno, _correo, contrasenia_encrypt, _telefono, 4);
-            INSERT INTO Alumnos (matricula, grado, grupo, id_usuario)
-            VALUES (_matricula, _grado, _grupo, last_insert_id());
-            SET mensaje = 'Usuario Alumno registrado';
-        END IF;
-
+            SET mensaje = 'La cuenta de bibliotecario se ha registrado correctamente';
         COMMIT;
     END IF;
-
     SET autocommit = 1;
 END;$$
 
@@ -878,19 +851,96 @@ begin
     SELECT rol INTO r FROM usuarios WHERE correo = _correo AND contrasenia = contra;
 
     IF r = 1 OR r = 2 THEN
-    SELECT * FROM usuarios WHERE correo = _correo AND contrasenia = contra;
+    SELECT id_usuario, nombre, apellido_paterno, apellido_materno, telefono, rol FROM usuarios WHERE correo = _correo AND contrasenia = contra;
     ELSEIF r = 3 THEN
-    SELECT u.*, d.* FROM usuarios u INNER JOIN docentes d ON u.id_usuario = d.id_usuario WHERE u.correo = _correo AND u.contrasenia = contra;
+    SELECT u.id_usuario, u.nombre, u.apellido_paterno, u.apellido_materno, u.telefono, u.rol, d.* FROM usuarios u INNER JOIN docentes d ON u.id_usuario = d.id_usuario WHERE u.correo = _correo AND u.contrasenia = contra;
     ELSEIF r = 4 THEN
-    SELECT u.*, a.* FROM usuarios u INNER JOIN alumnos a ON u.id_usuario = a.id_usuario WHERE u.correo = _correo AND u.contrasenia = contra;
+    SELECT u.id_usuario, u.nombre, u.apellido_paterno, u.apellido_materno, u.telefono, u.rol, a.* FROM usuarios u INNER JOIN alumnos a ON u.id_usuario = a.id_usuario WHERE u.correo = _correo AND u.contrasenia = contra;
     END IF;
 end;$$
 
-delimiter $$
-create procedure encontrar_usuario(_id_usuario int)
-begin
-select * from usuarios where id_usuario = _id_usuario;
-end;$$
+DELIMITER $$
+CREATE PROCEDURE insertar_alumno (
+    _nombre VARCHAR(50),
+    _apellido_paterno VARCHAR(50),
+    _apellido_materno VARCHAR(50),
+    _correo VARCHAR(100),
+    _contrasenia varchar(100),
+    _telefono VARCHAR(12),
+    _matricula varchar(30),
+    _carrea varchar(100),
+    _grado int,
+    _grupo varchar(2),
+    OUT mensaje varchar(100)
+)
+BEGIN
+    DECLARE contrasenia_encrypt varbinary(128);
+
+    DECLARE exit HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SET mensaje = 'Se produjo una excepción durante la transacción';
+    END;
+    SET autocommit = 0;
+    START TRANSACTION;
+    IF EXISTS (SELECT * FROM Usuarios WHERE correo = _correo) THEN
+        SET mensaje = CONCAT('El correo: ', _correo  ,' ya se encuentra ligado a una cuenta');
+        ROLLBACK;
+    ELSEIF EXISTS (SELECT * FROM Usuarios INNER JOIN alumnos a WHERE matricula = _matricula) THEN
+        SET mensaje = concat('Ya hay un alumno registrado con la matrícula: ', _matricula);
+        ROLLBACK;
+    ELSE
+        SET contrasenia_encrypt = aes_encrypt(_contrasenia, 'A4E7C6AE4013276DEABC1BE4F9C65A6DC382F317E0CB81497ABA26915CDE5B66');
+
+        INSERT INTO Usuarios (nombre, apellido_paterno, apellido_materno, correo, contrasenia, telefono, rol)
+            VALUES (_nombre, _apellido_paterno, _apellido_materno, _correo, contrasenia_encrypt, _telefono, 4);
+            INSERT INTO alumnos(matricula, carrera, grado, grupo, id_usuario) values (_matricula, _carrea, _grado,UPPER(_grupo), last_insert_id());
+            SET mensaje = concat('Se ha registrado correctamente, Ya puede iniciar sesión con el correo: ', _correo);
+        COMMIT;
+    END IF;
+    SET autocommit = 1;
+END;$$
+
+DELIMITER $$
+CREATE PROCEDURE insertar_docente (
+    _nombre VARCHAR(50),
+    _apellido_paterno VARCHAR(50),
+    _apellido_materno VARCHAR(50),
+    _correo VARCHAR(100),
+    _contrasenia varchar(100),
+    _telefono VARCHAR(12),
+    _no_control varchar(30),
+    _division varchar(100),
+    OUT mensaje varchar(100)
+)
+BEGIN
+    DECLARE contrasenia_encrypt varbinary(128);
+
+    DECLARE exit HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SET mensaje = 'Se produjo una excepción durante la transacción';
+    END;
+    SET autocommit = 0;
+    START TRANSACTION;
+    IF EXISTS (SELECT * FROM Usuarios WHERE correo = _correo) THEN
+        SET mensaje = CONCAT('El correo: ', _correo  ,' ya se encuentra ligado a una cuenta');
+        ROLLBACK;
+    ELSEIF EXISTS (SELECT * FROM usuarios INNER JOIN docentes d WHERE no_trabajador = _no_control) THEN
+        SET mensaje = concat('Ya hay un docente registrado con la matrícula: ', _no_control);
+        ROLLBACK;
+    ELSE
+        SET contrasenia_encrypt = aes_encrypt(_contrasenia, 'A4E7C6AE4013276DEABC1BE4F9C65A6DC382F317E0CB81497ABA26915CDE5B66');
+
+        INSERT INTO Usuarios (nombre, apellido_paterno, apellido_materno, correo, contrasenia, telefono, rol)
+            VALUES (_nombre, _apellido_paterno, _apellido_materno, _correo, contrasenia_encrypt, _telefono, 3);
+            INSERT INTO docentes(no_trabajador, division, id_usuario) values (_no_control, _division, last_insert_id());
+            SET mensaje = concat('Se ha registrado correctamente, Ya puede iniciar sesión con el correo: ', _correo);
+        COMMIT;
+    END IF;
+    SET autocommit = 1;
+END;$$
+
 
 delimiter $$
 create procedure buscar_salas(palabra varchar(20) , num varchar(3))

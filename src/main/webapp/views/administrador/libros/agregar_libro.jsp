@@ -33,7 +33,7 @@
               <div class="col">
                 <label for="autores_ids" class="fw-bold">Autor(es):</label>
                 <select name="autores_ids" id="autores_ids" required class="form-select" multiple>
-                  <option value="">Seleccione...</option>
+                  <option value="" selected disabled>Seleccione...</option>
                   <c:forEach var="autor" items="${autores}">
                     <h1><c:out value="${autor.nombre}"/></h1>
                     <option value="${autor.id_autor}"><c:out value="${autor.nombre}"/> <c:out
@@ -42,7 +42,7 @@
                   </c:forEach>
                 </select>
                 <div class="invalid-feedback">
-                  Campo obligatorio
+                  Por favor seleccione al menos un autor para este libro
                 </div>
               </div>
             </div>
@@ -79,7 +79,7 @@
               <div class="col">
                 <label for="ubicacion_id" class="fw-bold">Ubicación:</label>
                 <select name="ubicacion_id" id="ubicacion_id" required class="form-select">
-                  <option value="">Seleccione...</option>
+                  <option value="" selected disabled>Seleccione...</option>
                   <c:forEach var="ubicacion" items="${ubicaciones}">
                     <option value="${ubicacion.id}"><c:out value="${ubicacion.pasillo}, "/>
                       <c:out value="${ubicacion.seccion}, "/> <c:out
@@ -87,7 +87,7 @@
                   </c:forEach>
                 </select>
                 <div class="invalid-feedback">
-                  Campo obligatorio
+                  Por favor seleccione una ubicación para este libro
                 </div>
               </div>
             </div>
@@ -173,7 +173,7 @@
       event.preventDefault();
       event.stopPropagation();
       btn.classList.remove("disabled");
-      btn.innerHTML = 'AGREGAR SALA';
+      btn.innerHTML = 'Aceptar';
     }
     form.classList.add("was-validated");
   }, false);

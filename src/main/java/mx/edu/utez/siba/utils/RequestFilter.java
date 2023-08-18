@@ -19,6 +19,8 @@ public class RequestFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         //Endpoints publicos
         whiteList.add("/api/login");
+        whiteList.add("/api/register-view");
+        whiteList.add("/api/user/save");
     }
 
     @Override
