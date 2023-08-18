@@ -1222,7 +1222,6 @@ begin
 select  * from ejemplares where concat(observaciones) like concat('%', palabra, '%') or ejemplar like palabra;
 end; $$
 
-DROP PROCEDURE Insertar_ejemplar;
 DELIMITER $$
 CREATE PROCEDURE Insertar_ejemplar (_ejemplar integer ,_observaciones varchar(255), _id_libro integer, out mensaje varchar(255))
 BEGIN
