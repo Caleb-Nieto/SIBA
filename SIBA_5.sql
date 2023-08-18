@@ -73,13 +73,13 @@ CREATE TABLE libros_autores(
     FOREIGN KEY (id_autor)
     REFERENCES Autores (id_autor)
 );
-
 CREATE TABLE Ejemplares (
-  id_ejemplar INT,
-  observaciones VARCHAR(255) NULL,
-  id_libro INT NOT NULL,
-  PRIMARY KEY (id_ejemplar),
-  FOREIGN KEY (id_libro) REFERENCES Libros (id_libro)
+    id_ejemplar INT auto_increment,
+    ejemplar int not null,
+    observaciones VARCHAR(255) NULL,
+    id_libro INT NOT NULL,
+    PRIMARY KEY (id_ejemplar),
+    FOREIGN KEY (id_libro) REFERENCES Libros (id_libro)
 );
 
 CREATE TABLE Salas(
@@ -561,7 +561,7 @@ END;$$
 
 DELIMITER $$
 CREATE PROCEDURE Insertar_Libro ( _titulo VARCHAR(500), _isbn VARCHAR(500), _editorial VARCHAR(500),
-    _id_ub int, _id_ejemmplar int, _observaciones varchar(500), _autores varchar(100),
+    _id_ub int, _ejemplar int, _observaciones varchar(500), _autores varchar(100),
     _file_name varchar(100), _file MEDIUMBLOB, out mensaje varchar(255))
 BEGIN
     DECLARE _id_libro int;
@@ -582,7 +582,7 @@ BEGIN
         ROLLBACK;
         when length(_titulo) > 50 or length(_editorial) > 50 then set mensaje = 'El nombre de la editorial o el titulo son demasiado largos';
 		ROLLBACK;
-        when EXISTS(SELECT * FROM ejemplares WHERE id_ejemplar = _id_ejemmplar) THEN SET mensaje = 'El id del ejemplar no puede repetirse';
+        when EXISTS(SELECT * FROM ejemplares WHERE ejemplar = _ejemplar) THEN SET mensaje = 'El id del ejemplar no puede repetirse';
         ROLLBACK;
         else
             INSERT INTO Libros (titulo, isbn, editorial, id_ub) VALUES (_titulo, _isbn, _editorial, _id_ub);
@@ -590,7 +590,7 @@ BEGIN
             IF (_file_name IS NOT NULL) AND (_file IS NOT NULL) THEN
                 INSERT INTO libros_img (id_libro, file_name, file) values (_id_libro, _file_name, _file);
             END IF;
-            INSERT INTO ejemplares(id_ejemplar, observaciones, id_libro) values (_id_ejemmplar, _observaciones, _id_libro);
+            INSERT INTO ejemplares(ejemplar, observaciones, id_libro) values (_ejemplar, _observaciones, _id_libro);
             WHILE LENGTH(_autores) > 0 DO
                 SET _id_autor = SUBSTRING_INDEX(_autores, ',', 1);
                 INSERT INTO libros_autores(id_libro, id_autor) VALUES (_id_libro, _id_autor);
@@ -1208,4 +1208,126 @@ VALUES (3, 2, 'D');
 
 INSERT INTO Ubicaciones_libros (pasillo, seccion, estante)
 VALUES (2, 1, 'E');
+
+
+delimiter $$
+create procedure contar_ejemplares()
+begin
+select count(*) as total from Ejemplares;
+end; $$
+
+
+delimiter $$
+create procedure consultar_ejemplares(inicio int, limite int)
+begin
+SELECT
+    ejemplares.ejemplar,
+    ejemplares.observaciones,
+    libros.id_libro
+FROM ejemplares
+         INNER JOIN libros ON ejemplares.id_libro = libros.id_libro
+    LIMIT inicio, limite;
+end; $$
+
+
+delimiter $$
+create procedure get_ejemplar(_ejemplar integer)
+begin
+select * from ejemplares where ejemplar=_ejemplar;
+end;$$
+
+
+delimiter $$
+create procedure buscar_ejemplar(palabra varchar(100))
+begin
+select  * from ejemplares where concat(observaciones) like concat('%', palabra, '%') or ejemplar like palabra;
+end; $$
+
+
+delimiter $$
+create procedure buscar_ejemplar(palabra varchar(100), out mensaje VARCHAR(255))
+begin
+        if not exists (select * from ejemplares where concat(observaciones) like concat('%', palabra, '%') or ejemplar like palabra) then
+        set mensaje = "No hay un registro con esas caracteristicas";
+else
+select * from ejemplares where concat(observaciones) like concat('%', palabra, '%') or ejemplar like palabra;
+end if;
+end; $$
+
+
+DROP PROCEDURE Insertar_ejemplar;
+DELIMITER $$
+CREATE PROCEDURE Insertar_ejemplar (_ejemplar integer ,_observaciones varchar(255), _id_libro integer, out mensaje varchar(255))
+BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+BEGIN
+ROLLBACK;
+SET mensaje = 'El identificador del libro debe ser de tipo númerico';
+END;
+    SET autocommit = 0;
+START TRANSACTION;
+CASE
+		WHEN EXISTS (SELECT * FROM ejemplares WHERE ejemplar=_ejemplar) THEN set mensaje =  'Ya existe un ejemplar con ese identificador';
+ROLLBACK;
+WHEN LENGTH(_observaciones) > 255  then set mensaje = 'Observación de ejemplar demasiado larga';
+ROLLBACK;
+ELSE
+		INSERT INTO ejemplares (ejemplar,observaciones,id_libro) VALUES (_ejemplar, _observaciones, _id_libro);
+		SET mensaje = 'Registro de ejemplar exitoso';
+COMMIT;
+END CASE;
+    SET autocommit = 1;
+END;$$
+
+
+DELIMITER $$
+create procedure eliminar_ejemplar(_ejemplar Integer, OUT mensaje varchar(255))
+begin
+DECLARE EXIT HANDLER FOR SQLEXCEPTION
+BEGIN
+ROLLBACK;
+SET mensaje = 'Ha ocurrido un error';
+END;
+	SET autocommit = 0;
+START TRANSACTION;
+IF EXISTS (SELECT ejemplar FROM ejemplares WHERE _ejemplar=ejemplar) THEN
+DELETE FROM ejemplares
+WHERE _ejemplar=ejemplar;
+SET mensaje =  'Se ha elimindado el ejemplar correctamente';
+COMMIT;
+ELSE
+        SET mensaje =  'El ejemplar no existe';
+ROLLBACK;
+END IF;
+    SET autocommit = 1;
+end;$$
+
+
+DELIMITER $$
+CREATE PROCEDURE actualizar_ejemplar (_ejemplar INT,_observaciones VARCHAR(255),OUT mensaje VARCHAR(255))
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+BEGIN
+ROLLBACK;
+SET mensaje = 'Ha ocuurido un error';
+END;
+
+    SET autocommit = 0;
+START TRANSACTION;
+
+CASE
+        WHEN LENGTH(_observaciones) > 254 THEN
+            SET mensaje = 'Observación de ejemplar demasiado larga';
+ROLLBACK;
+WHEN NOT EXISTS (SELECT * FROM Ejemplares WHERE ejemplar = _ejemplar) THEN
+            SET mensaje = 'No existe ese ejemplar';
+ROLLBACK;
+ELSE
+UPDATE Ejemplares SET observaciones = _observaciones WHERE ejemplar = _ejemplar;
+SET mensaje = 'Se ha actualizado el ejemplar correctamente';
+COMMIT;
+END CASE;
+
+    SET autocommit = 1;
+END;$$
 
