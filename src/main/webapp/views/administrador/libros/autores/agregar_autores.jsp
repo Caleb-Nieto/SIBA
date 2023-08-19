@@ -71,7 +71,7 @@
             event.preventDefault();
             event.stopPropagation();
             btn.classList.remove("disabled");
-            btn.innerHTML = 'AGREGAR SALA';
+            btn.innerHTML = 'Aceptar';
         }
         form.classList.add("was-validated");
     }, false);

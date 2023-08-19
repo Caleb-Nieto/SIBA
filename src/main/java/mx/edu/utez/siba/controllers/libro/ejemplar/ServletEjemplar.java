@@ -29,7 +29,6 @@ public class ServletEjemplar extends HttpServlet {
     private String id_ejemplar, observaciones;
     private BeanLibro libro;
     private String mensaje;
-    private HttpSession session;
     private BeanEjemplar ejemplar;
     private List<BeanEjemplar> ejemplares;
 
@@ -55,7 +54,12 @@ public class ServletEjemplar extends HttpServlet {
                 request.setAttribute("totalPaginas", totalPaginas);
                 request.setAttribute("paginaActual", pagina);
 
-                redirect= "/views/administrador/ejemplares/list_ejemplares.jsp";
+                redirect = "/views/administrador/libros/ejemplares/list_ejemplares.jsp";
+                break;
+
+            case "/api/ejemplar/ejemplar-view-save":
+
+                redirect = "/views/administrador/libros/ejemplares/agregar_ejemplares.jsp";
                 break;
         }
         request.getRequestDispatcher(redirect).forward(request, response);
@@ -74,7 +78,7 @@ public class ServletEjemplar extends HttpServlet {
                 libro=new BeanLibro();//declaro un nuevo libro
 
                 libro.setId(Long.parseLong("id_libro"));
-                ejemplar = new BeanEjemplar(Long.parseLong(id_ejemplar), observaciones,libro);
+                ejemplar = new BeanEjemplar(0L,Integer.parseInt(id_ejemplar), observaciones,libro);
                 mensaje = new DaoEjemplar().save(ejemplar);
                 if (mensaje.contains("correctamente")){
                     redirect = "/ejemplar/ejemplar-view?result=true&message="+ URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
@@ -89,7 +93,7 @@ public class ServletEjemplar extends HttpServlet {
                 libro=new BeanLibro();
                 libro.setId(Long.parseLong("id_libro"));
 
-                ejemplar = new BeanEjemplar(Long.parseLong(id_ejemplar),observaciones, libro);
+                ejemplar = new BeanEjemplar(0L,Integer.parseInt(id_ejemplar), observaciones,libro);
                 mensaje = new DaoEjemplar().update(ejemplar);
                 if (mensaje.contains("correctamente")){
                     redirect = "/api/ejemplar/ejemplares?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);

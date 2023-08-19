@@ -5,6 +5,8 @@ import  mx.edu.utez.siba.models.usuario.DaoUsuario;
 
 public class UsuarioService {
     DaoUsuario usuario = new DaoUsuario();
-    public BeanUsuario login(String correo, String contrasenia){return usuario.validate(correo, contrasenia);
+    public BeanUsuario login(String correo, String contrasenia){
+
+        return usuario.loadUserByEmailAndPassword(correo, contrasenia);
     }
 }

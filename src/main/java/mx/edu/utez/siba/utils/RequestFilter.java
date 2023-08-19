@@ -19,6 +19,8 @@ public class RequestFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         //Endpoints publicos
         whiteList.add("/api/login");
+        whiteList.add("/api/register-view");
+        whiteList.add("/api/user/save");
     }
 
     @Override
@@ -33,7 +35,7 @@ public class RequestFilter implements Filter {
             filterChain.doFilter(servletRequest, servletResponse);
         } else {
             HttpSession session = request.getSession();
-            if (session.getAttribute("usuario") != null) {
+            if (session.getAttribute("user") != null) {
                 filterChain.doFilter(servletRequest, servletResponse);
             } else {
                 response.sendRedirect(request.getContextPath() + "/api/login");

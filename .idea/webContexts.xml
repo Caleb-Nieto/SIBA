@@ -6,10 +6,13 @@
         <entry key="file://$PROJECT_DIR$/src/main/webapp/index.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/layouts/header.jsp" value="file://$PROJECT_DIR$/src/main/webapp/layouts" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/layouts/navbar.jsp" value="file://$PROJECT_DIR$/src/main/webapp/layouts" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/registro.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/views/administrador/libros/editar_libro.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/administrador/libros" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/views/administrador/libros/list_libros.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/administrador/libros" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/views/administrador/salas/agregar_sala.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/administrador/salas" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/views/administrador/salas/list_salas.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/administrador/salas" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/views/administrador/usuarios/editar_usuario.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/administrador/usuarios" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/views/administrador/usuarios/list_usuarios.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/administrador/usuarios" />
       </map>
     </option>
   </component>
