@@ -28,11 +28,11 @@
           <label for="contrasenia">Contraseña</label>
           <div id="feedbackp" class="invalid-feedback text-start" style="font-size: medium;">Ingresa tu contraseña</div>
         </div>
-        <label class="label small"><a href="...">¿No tienes cuenta? Regístrate aquí</a></label>
+        <label class="label small"><a href="/api/register-view">¿No tienes cuenta? Regístrate aquí</a></label>
         <button id="login" class="btn btn-success w-100 py-2 mt-2" type="submit">Iniciar sesión</button>
       </form>
     </main>
-    <c:if test="${not empty param.message}">
+    <c:if test="${not empty param.message and param.result == false}">
       <div class="container mt-4">
         <div class="alert alert-danger" role="alert">
           <c:out value="${param.message}"/>
@@ -46,8 +46,6 @@
   window.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("login-form");
     const btn = document.getElementById("login");
-    const feedbacke = document.getElementById("feedbacke");
-    const feedbackp = document.getElementById("feedbackp");
     form.addEventListener('submit', event => {
       btn.innerHTML = `<div class="d-flex justify-content-center">
                                     <div class="spinner-border" role="status">
@@ -63,6 +61,13 @@
       }
       form.classList.add("was-validated");
     }, false);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const result = urlParams.get('result');
+    const mensaje = urlParams.get('message');
+    if (result === 'true') {
+      Swal.fire('¡Éxito!', mensaje, 'success');
+    }
   }, false);
 </script>
 </body>

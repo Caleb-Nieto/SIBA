@@ -73,7 +73,7 @@ public class DaoLibro{
         int total = 0;
         try{
             conn = new MySQLConnection().getConnection();
-            String query = "call contar_libros()";
+            String query = "call contar_libros();";
             cstm = conn.prepareCall(query);
             cstm.execute();
             rs = cstm.getResultSet();
@@ -93,7 +93,7 @@ public class DaoLibro{
         BeanLibro libro = new BeanLibro();
         try{
             conn = new MySQLConnection().getConnection();
-            String query = "call get_libro(?)";
+            String query = "call get_libro(?);";
             cstm = conn.prepareCall(query);
             cstm.setLong(1, id);
             cstm.execute();
@@ -179,7 +179,7 @@ public class DaoLibro{
 
             cstm.setString(5, ejemplar.getObservaciones());
 
-            if(libro.getFile() != null && libro.getFileName().isEmpty()){
+            if(libro.getFile() != null && !libro.getFileName().isEmpty()){
                 cstm.setString(6, libro.getFileName());
                 cstm.setBytes(7, libro.getFile());
             }else{
@@ -254,7 +254,7 @@ public class DaoLibro{
         String mensaje = ":(";
         try{
             conn = new MySQLConnection().getConnection();
-            String query = "call eliminar_libro(?, ?)";
+            String query = "call eliminar_libro(?, ?);";
             cstm = conn.prepareCall(query);
             cstm.setLong(1, id);
             cstm.registerOutParameter(2, Types.VARCHAR);
@@ -292,6 +292,36 @@ public class DaoLibro{
             close();
         }
         return libro;
+    }
+
+    //Mostar los libros de un autor
+    public List<BeanLibro> libros(Long id_autor) {
+        List<BeanLibro> libros = new ArrayList<>();
+
+        try {
+            conn = new MySQLConnection().getConnection();
+            String query = "call libros(?);";
+            cstm = conn.prepareCall(query);
+
+            cstm.setLong(1, id_autor);
+
+            cstm.execute();
+            rs = cstm.getResultSet();
+
+            while (rs.next()) {
+                BeanLibro libro = new BeanLibro();
+
+                libro.setTitulo(rs.getString("titulo"));
+
+                libros.add(libro);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(DaoSala.class.getName())
+                    .log(Level.SEVERE, "Error FindAutores" + e.getMessage());
+        } finally {
+            close();
+        }
+        return libros;
     }
 
 
