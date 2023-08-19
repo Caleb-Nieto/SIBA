@@ -1,4 +1,3 @@
-
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
@@ -54,45 +53,47 @@
     </div>
     <div class="row row-cols-1 row-cols-md-3 g-4">
         <c:forEach items="${usuarios}" var="usuario">
-            <div class="col">
-                <div class="card text-center">
-                    <div class="card-header" style="background: #045c4a; color: white;">
-                        <h5>
-                            <c:choose>
-                                <c:when test="${usuario.rol == 1}">Admin</c:when>
-                                <c:when test="${usuario.rol == 2}">Bibliotecario</c:when>
-                                <c:when test="${usuario.rol == 3}">Docente</c:when>
-                                <c:when test="${usuario.rol == 4}">Alumno</c:when>
-                            </c:choose>
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title"><c:out value="${usuario.nombre} ${usuario.apellido_paterno} ${usuario.apellido_materno}"/></h5>
-                        <p class="card-text"><c:out value="${usuario.correo}"/></p>
-                        <p class="card-text"><c:out value="${usuario.telefono}"/></p>
-                    </div>
-                    <div class="card-footer text-center" style="background: #045c4a; color: white;">
-                        <div class="row">
-                            <div class="col">
-                                <form method="get" action="/api/usuario/usuario-view-update">
-                                    <input hidden value="${usuario.id_usuario}" name="id_usuario"/>
-                                    <button type="submit" class="btn btn-primary btn-sm">
-                                        Editar
-                                    </button>
-                                </form>
-                            </div>
-                            <div class="col">
-                                <form class="deleteForm" method="post" action="/api/usuario/delete">
-                                    <input hidden value="${usuario.id_usuario}" name="id_usuario" />
-                                    <button type="button" onclick="alerta(this)" class="btn btn-danger btn-sm">
-                                        Eliminar
-                                    </button>
-                                </form>
+            <c:if test="${usuario.rol != 1}">
+                <div class="col">
+                    <div class="card text-center">
+                        <div class="card-header" style="background: #045c4a; color: white;">
+                            <h5>
+                                <c:choose>
+                                    <c:when test="${usuario.rol == 1}">Admin</c:when>
+                                    <c:when test="${usuario.rol == 2}">Bibliotecario</c:when>
+                                    <c:when test="${usuario.rol == 3}">Docente</c:when>
+                                    <c:when test="${usuario.rol == 4}">Alumno</c:when>
+                                </c:choose>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title"><c:out value="${usuario.nombre} ${usuario.apellido_paterno} ${usuario.apellido_materno}"/></h5>
+                            <p class="card-text"><c:out value="${usuario.correo}"/></p>
+                            <p class="card-text"><c:out value="${usuario.telefono}"/></p>
+                        </div>
+                        <div class="card-footer text-center" style="background: #045c4a; color: white;">
+                            <div class="row">
+                                <div class="col">
+                                    <form method="get" action="/api/usuario/usuario-view-update">
+                                        <input hidden value="${usuario.id_usuario}" name="id_usuario"/>
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            Editar
+                                        </button>
+                                    </form>
+                                </div>
+                                <div class="col">
+                                    <form class="deleteForm" method="post" action="/api/usuario/delete">
+                                        <input hidden value="${usuario.id_usuario}" name="id_usuario" />
+                                        <button type="button" onclick="alerta(this)" class="btn btn-danger btn-sm">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </c:if>
         </c:forEach>
     </div>
     <c:if test="${not empty usuarios and totalPaginas > 1}">
