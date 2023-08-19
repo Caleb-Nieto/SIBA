@@ -4,14 +4,14 @@
 <html lang="en">
 <head>
     <c:choose>
-        <c:when test="${rol == 1}">
-            <title>Registrar usuario</title>
+        <c:when test="${rol == 1 || rol == 2}">
+            <title>Registro de ususario</title>
             <jsp:include page="${pageContext.request.contextPath}/layouts/navbar.jsp"/>
             <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/mainStyle.css">
 
         </c:when>
         <c:otherwise>
-            <title>Registrarse</title>
+            <title>Registro</title>
             <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/Indexstyle.css">
         </c:otherwise>
     </c:choose>
@@ -26,7 +26,12 @@
                     <h5>Registrarse</h5>
                 </div>
                 <div class="card-body">
+                    <c:if test="${usuario.rol == 1}">
+
+                    </c:if>
+                    <c:if test="${usuario.rol != 1}">
                     <form class="row g-3 needs-validation" id="register-form" novalidate action="/api/user/save" method="post">
+                        </c:if>
                         <div class="col-md-4">
                             <label for="validationCustom01" class="fw-bold">Nombre(s):</label>
                             <input type="text" class="form-control" id="validationCustom01" name="nombre" maxlength="40" required>
@@ -69,18 +74,20 @@
                                 Campo obligatorio
                             </div>
                         </div>
-                        <div class="col-md-2">
-                        </div>
-                        <!--Botones de opciones-->
-                        <label for="rol">Seleccione su rol:</label>
-                        <select id="rol" name="rol" required>
-                            <option value="" disabled selected>Opciones...</option>
-                            <c:if test="${rol == 1}"><option value="">Bibliotecario</option></c:if>
-                            <option value="alumno">Alumno</option>
-                            <option value="docente">Docente</option>
-                        </select>
-                        <div class="invalid-feedback">
-                            Por favor seleccione su rol
+                        <div class="col-md-7">
+                            <!--Botones de opciones-->
+                            <label for="rol" class="fw-bold">Seleccione su rol:</label>
+                            <select class="form-select" id="rol" name="rol" required>
+                                <option selected disabled>Opciones</option>
+                                <c:if test="${rol == 1}">
+                                    <option>Bibliotecario</option>
+                                </c:if>
+                                <option value="alumno">Alumno</option>
+                                <option value="docente">Docente</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Por favor seleccione su rol
+                            </div>
                         </div>
                         <!--Opciones de botones para registro-->
                         <div class="col col-md-12 align-middle">
@@ -150,16 +157,29 @@
                                             </div>
                                             <div class="col-12">
                                                 <label for="validationCustom08" class="fw-bold">Carrera:</label>
-                                                <input type="text" class="form-control" id="validationCustom07" name="carrera" maxlength="200" required>
+                                                <select class="form-select" id="carrera" name="carrera" required>
+                                                  <option selected disabled>Opciones</option>
+                                                  <option value="Desarrollo de Software Multiplataforma">Desarrollo de Software Multiplataforma</option>
+                                                  <option value="Infraestructura de Redes Digitales">Infraestructura de Redes Digitales</option>
+                                                  <option value="Diseño Digital">Diseño Digital</option>
+                                                  <option value="Mecatrónica">Mecatrónica</option>
+                                                  <option value="Mantenimiento Industrial">Mantenimiento Industrial</option>
+                                                  <option value="Nanotecnología">Nanotecnología</option>
+                                                  <option value="Procesos Industriales">Procesos Industriales</option>
+                                                  <option value="Rehabilitación">Rehabilitación</option>
+                                                  <option value="Turismo de Salud y Bienestar">Turismo de Salud y Bienestar</option>
+                                                  <option value="Administación">Administación</option>
+                                                  <option value="Mercadotecnia">Mercadotecnia</option>
+                                                  <option value="Diseño y Moda">Diseño y Moda</option>
+                                                </select>
                                                 <div class="invalid-feedback">
                                                     Campo obligatorio
                                                 </div>
                                             </div>
-                                            <br/>
                                             <div class="col-md-12">
-                                                <label for="grado">Seleccione su grado:</label>
-                                                <select id="grado" name="grado" required>
-                                                    <option value="" disabled selected>Opciones...</option>
+                                                <label for="grado" class="fw-bold">Seleccione su grado:</label>
+                                                <select class="form-select" id="grado" name="grado" required>
+                                                    <option selected disabled>Opciones</option>
                                                     <option value="1">1</option>
                                                     <option value="2">2</option>
                                                     <option value="3">3</option>
@@ -198,7 +218,13 @@
                                             </div>
                                             <div class="col-md-12">
                                                 <label for="validationCustom11" class="fw-bold">División academica:</label>
-                                                <input type="text" class="form-control" id="validationCustom11" name="division" maxlength="30" required>
+                                                <select class="form-select" id="division" name="division" required>
+                                                  <option selected disabled>Opciones</option>
+                                                  <option value="DATID">DATID</option>
+                                                  <option value="DATEFI">DATEFI</option>
+                                                  <option value="DACEA">DACEA</option>
+                                                  <option value="DAMI">DAMI</option>
+                                                </select>
                                                 <div class="invalid-feedback">
                                                     Campo obligatorio
                                                 </div>

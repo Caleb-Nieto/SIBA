@@ -139,7 +139,11 @@ public class ServletUsuarioLogin extends HttpServlet {
 
 
                 if(mensaje.contains("correctamente")){
-                    urlRedirect = "/api/login?result=true&message="+ URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    if (usuario.getRol() == 1) {
+                        urlRedirect = "/api/usuario/usuarios?result=true&message="+ URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    } else{
+                        urlRedirect = "/api/libro/libros";
+                    }
                 }else{
                     urlRedirect = "/api/register-view?result=false&message="+ URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }
