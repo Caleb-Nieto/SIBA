@@ -71,10 +71,6 @@
                                 <p class="card-text"><c:out value="${sala.capacidad} personas"/></p>
                                 <h5 class="card-title">Descripción:</h5>
                                 <p class="card-text"><c:out value="${sala.descripcion}"/></p>
-                                <c:if test="${rol==2 && empty sala.prestamo}">
-                                    <label for="controlid">Matricula o Núm. Trabajador:</label>
-                                    <input type="text" id="controlid" class="form-control" name="idu">
-                                </c:if>
                             </div>
                             <div class="card-footer border-1 text-center" style="background: #045c4a; color: white;">
                                 <div class="row">
@@ -99,27 +95,30 @@
 
                                     <c:if test="${rol == 2}">
                                     <c:if test="${empty sala.prestamo}">
+
                                         <div class="col">
-                                            <form method="get" action="">
-                                                <input hidden value="${sala.id_sala}" name="id_sala"/>
+                                            <form method="post" action="/api/iniciar/prestamo">
+                                                <input type="hidden" value="${sala.id_sala}" name="id_sala"/>
+                                                <label for="idu"></label>
+                                                <input type="text" id="idu" placeholder="Matricula o Núm. Trabajador:" class="form-control controlid" name="idu" />
                                                 <button type="submit" class="btn btn-primary btn-sm">
-                                                    Realizar prestamo
+                                                    Realizar préstamo
                                                 </button>
                                             </form>
                                         </div>
+
                                     </c:if>
                                     <c:if test="${not empty sala.prestamo}">
                                         <div class="col">
-                                            <form class="deleteForm" method="post" action="/api/sala/delete">
+                                            <form class="finalizarForm" method="post" action="/api/finalizar/prestamo">
                                                 <input hidden value="${sala.id_sala}" name="id_sala"/>
-                                                <button type="button" class="btn btn-primary btn-sm">
-                                                    Finalizar pretamo
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="alertafin(this)">
+                                                    Finalizar préstamo
                                                 </button>
                                             </form>
                                         </div>
                                     </c:if>
                                     </c:if>
-
 
 
                                     <c:if test="${rol == 3 || rol == 4}">
@@ -199,6 +198,45 @@
           }
       })
     })
+
+
+
+    let finalizarFormulario = false;
+
+    //Funcio que recibe un boton como parametro y despliega un mensaje de alerta, antes de eliminar
+    function alertafin(button){
+        Swal.fire({
+            title: '¿Finalizar prestamo?',
+            text: "",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, finalizar',
+            cancelButtonText: 'No, cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                finalizarFormulario = true;
+                let form = button.parentElement;
+                form.submit();
+            }
+        })
+    }
+    //-----------------------------------------------
+
+    //Selecciona cada formulario por el nombre de la clase y mientras el formulario sea false, este no se enviara
+    document.querySelectorAll('.finalizarForm').forEach(form =>{
+        form.addEventListener('submit', event =>{
+            if(!finalizarFormulario){
+                event.preventDefault();
+            }
+        })
+    })
+
+
+
+
+
     //--------------------------------------------------
 
     /*Mensaje de la libreria sweetalert que se despliega cuando en la url el parametro message tiene un valor.
@@ -210,8 +248,11 @@
         const mensaje = urlParams.get('message');
         if (result === 'true') {
             Swal.fire('¡Éxito!', mensaje, 'success');
+        }else{
+            Swal.fire('¡Error!', mensaje, 'error');
         }
     });
+
 </script>
 </body>
 </html>

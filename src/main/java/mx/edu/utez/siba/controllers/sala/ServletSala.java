@@ -128,6 +128,7 @@ public class ServletSala extends HttpServlet {
                 id_sala = request.getParameter("id_sala");
 
                 mensaje = new DaoSala().delete(Long.parseLong(id_sala));
+
                 if (mensaje.contains("correctamente")){
                     redirect = "/api/sala/salas?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }else{

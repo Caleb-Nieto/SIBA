@@ -192,6 +192,49 @@ public class DaoSala implements DaoRepository<BeanSala>{
     }
 
 
+    public String hacerPrestamo(Long id, String idu){
+        try{
+            conn = new MySQLConnection().getConnection();
+            String query = "call iniciar_prestamo_sala(?, ?, ?);";
+            cstm = conn.prepareCall(query);
+            cstm.setLong(1, id);
+            cstm.setString(2, idu);
+
+            cstm.registerOutParameter(3, Types.VARCHAR);
+            cstm.execute();
+
+            return cstm.getString(3);
+
+        }catch (SQLException e){
+            Logger.getLogger(DaoSala.class.getName())
+                    .log(Level.SEVERE, "Error hacer prestamo" + e.getMessage());
+        }finally {
+            close();
+        }
+        return "error";
+    }
+    public String finalizarPrestamo(Long id){
+        try{
+            conn = new MySQLConnection().getConnection();
+            String query = "call finalizar_prestamo_sala(?, ?);";
+            cstm = conn.prepareCall(query);
+            cstm.setLong(1, id);
+
+            cstm.registerOutParameter(2, Types.VARCHAR);
+            cstm.execute();
+
+            return cstm.getString(2);
+
+        }catch (SQLException e){
+            Logger.getLogger(DaoSala.class.getName())
+                    .log(Level.SEVERE, "Error finalizar prestamo " + e.getMessage());
+        }finally {
+            close();
+        }
+
+        return "error";
+    }
+
     public void close(){
         try {
             if (conn != null) conn.close();

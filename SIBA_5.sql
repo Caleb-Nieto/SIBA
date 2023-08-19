@@ -95,7 +95,7 @@ CREATE TABLE prestamos_libros(
     id_ejemplar INT NOT NULL,
     id_usuario INT NOT NULL,
     fecha_inicio TIMESTAMP NOT NULL,
-    fecha_devolucion TIMESTAMP NOT NULL,
+    fecha_devolucion TIMESTAMP not null ,
     estatus ENUM('Activo', 'Finalizado') NOT NULL DEFAULT 'Activo',
     PRIMARY KEY(id_prestamo_libro),
     FOREIGN KEY (id_ejemplar) REFERENCES ejemplares (id_ejemplar),
@@ -107,7 +107,7 @@ CREATE TABLE prestamos_salas(
     id_sala INT NOT NULL,
     id_usuario INT NOT NULL,
     fecha_inicio TIMESTAMP NOT NULL,
-    fecha_devolucion TIMESTAMP NOT NULL,
+    fecha_devolucion TIMESTAMP,
     estatus ENUM('Activo', 'Finalizado') NOT NULL DEFAULT 'Activo',
     PRIMARY KEY(id_prestamo_sala),
     FOREIGN KEY (id_sala) REFERENCES salas (id_sala),
@@ -1137,13 +1137,11 @@ create procedure ubicaciones()
         select * from ubicaciones_libros order by pasillo, seccion, estante;
     end; $$
 
-
 delimiter $$
 create procedure findFile(id int)
 begin
     select file_name, file from libros_img where id_libro=id;
 end; $$
-
 
 DELIMITER $$
 CREATE PROCEDURE Insertar_autor ( _nombre varchar(500), _ap VARCHAR(500), _am varchar(500), out mensaje varchar(255))
@@ -1215,35 +1213,11 @@ begin
     SET autocommit = 1;
 end;$$
 
-insert into salas values(0, 'Sala 1', '30', '1 proyector, mesas redondas, sillas giratorias c/u y 2 refrigeradores');
-insert into salas values(0, 'Sala 2', '10', '2 mesas cuadradas, sillas b3 c/u y 1 aire acondicionado');
-insert into salas values(0, 'Sala 3', '15', '1 mesa');
-
-
-
--- Insertar registros en la tabla Ubicaciones_libros
-INSERT INTO Ubicaciones_libros (pasillo, seccion, estante)
-VALUES (1, 2, 'A');
-
-INSERT INTO Ubicaciones_libros (pasillo, seccion, estante)
-VALUES (2, 3, 'B');
-
-INSERT INTO Ubicaciones_libros (pasillo, seccion, estante)
-VALUES (1, 1, 'C');
-
-INSERT INTO Ubicaciones_libros (pasillo, seccion, estante)
-VALUES (3, 2, 'D');
-
-INSERT INTO Ubicaciones_libros (pasillo, seccion, estante)
-VALUES (2, 1, 'E');
-
-
 delimiter $$
 create procedure contar_ejemplares()
 begin
 select count(*) as total from ejemplares;
 end; $$
-
 
 delimiter $$
 create procedure consultar_ejemplares(inicio int, limite int)
@@ -1257,20 +1231,17 @@ FROM ejemplares
     LIMIT inicio, limite;
 end; $$
 
-
 delimiter $$
 create procedure get_ejemplar(_ejemplar integer)
 begin
 select * from ejemplares where ejemplar=_ejemplar;
 end;$$
 
-
 delimiter $$
 create procedure buscar_ejemplar(palabra varchar(100))
 begin
 select  * from ejemplares where concat(observaciones) like concat('%', palabra, '%') or ejemplar like palabra;
 end; $$
-
 
 delimiter $$
 create procedure buscar_ejemplar(palabra varchar(100), out mensaje VARCHAR(255))
@@ -1281,7 +1252,6 @@ else
 select * from ejemplares where concat(observaciones) like concat('%', palabra, '%') or ejemplar like palabra;
 end if;
 end; $$
-
 
 DROP PROCEDURE Insertar_ejemplar;
 DELIMITER $$
@@ -1306,7 +1276,6 @@ COMMIT;
 END CASE;
     SET autocommit = 1;
 END;$$
-
 
 DELIMITER $$
 create procedure eliminar_ejemplar(_ejemplar Integer, OUT mensaje varchar(255))
@@ -1367,4 +1336,79 @@ END CASE;
 
     SET autocommit = 1;
 END;$$
+
+delimiter $$
+create procedure  iniciar_prestamo_sala(_id_sala int, ma_nt varchar(100), OUT mensaje varchar(255))
+begin
+    declare _id_usuario int;
+    declare ms varchar(100);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+    SET mensaje = 'Ha ocurrido un error';
+    ROLLBACK;
+    END;
+    SET autocommit = 0;
+    START TRANSACTION;
+    IF EXISTS(select * from usuarios u INNER JOIN docentes d on u.id_usuario=d.id_usuario where no_trabajador = ma_nt) then
+
+        select u.id_usuario into _id_usuario from usuarios u INNER JOIN docentes d on u.id_usuario=d.id_usuario where no_trabajador = ma_nt;
+        SET ms = concat('docente con número de trabajador: ', ma_nt);
+
+    ELSEIF EXISTS(select * from usuarios u INNER JOIN alumnos a on u.id_usuario=a.id_usuario where matricula = ma_nt) then
+
+        select u.id_usuario into _id_usuario from usuarios u INNER JOIN alumnos a on u.id_usuario=a.id_usuario where matricula = ma_nt;
+
+        SET ms = concat('alumno con matrícula: ', ma_nt);
+    end if;
+
+    IF  _id_usuario is not null then
+        IF EXISTS(select * from prestamos_salas p where p.id_sala = _id_sala and p.estatus = 'Activo') then
+
+             set mensaje = 'La sala ya esta prestada';
+             ROLLBACK;
+
+        ELSEIF EXISTS(select * from prestamos_salas p where p.estatus = 'Activo' and p.id_usuario = _id_usuario) then
+
+            set mensaje = concat('El ', ms, ', ya tiene una sala prestada');
+            ROLLBACK;
+        ELSE
+             insert into prestamos_salas(id_sala, id_usuario, fecha_inicio, estatus) values(_id_sala, _id_usuario, sysdate(), 'Activo');
+
+            set mensaje = concat('Préstamo realizado correctamente al ', ms);
+            COMMIT;
+        end if;
+    ELSE
+        set mensaje = 'La matrícula o el número del trabajador no esta registrada, asegurate de que este bien escrita';
+        ROLLBACK;
+    end if;
+
+    SET autocommit = 1;
+end;$$
+
+delimiter $$
+create procedure  finalizar_prestamo_sala(_id_sala int, out mensaje varchar(200))
+begin
+    declare nombre_sala varchar(100);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+    SET mensaje = 'Ha ocurrido un error';
+    ROLLBACK;
+    END;
+    set autocommit = 0;
+    start transaction;
+
+    select * from prestamos_salas for update;
+
+    if exists(select  * from prestamos_salas where id_sala = _id_sala) then
+        select nombre into nombre_sala from salas where id_sala = _id_sala;
+
+        update prestamos_salas set fecha_devolucion = sysdate(), estatus = 'Finalizado' where id_sala = _id_sala;
+        commit;
+
+        set mensaje = concat('El prestamo: ',nombre_sala  ,' se ha finalizado correctamente');
+    else
+        set mensaje = 'La sala que busca no existe';
+    end if;
+    set autocommit = 0;
+end; $$
 
