@@ -940,7 +940,7 @@ BEGIN
         INSERT INTO Usuarios (nombre, apellido_paterno, apellido_materno, correo, contrasenia, telefono, rol)
             VALUES (_nombre, _apellido_paterno, _apellido_materno, _correo, contrasenia_encrypt, _telefono, 4);
             INSERT INTO alumnos(matricula, carrera, grado, grupo, id_usuario) values (_matricula, _carrea, _grado,UPPER(_grupo), last_insert_id());
-            SET mensaje = concat('Se ha registrado correctamente, Ya puede iniciar sesión con el correo: ', _correo);
+            SET mensaje = concat('Se ha registrado correctamente, Ya se puede iniciar sesión con el correo: ', _correo);
         COMMIT;
     END IF;
     SET autocommit = 1;
@@ -980,7 +980,7 @@ BEGIN
         INSERT INTO Usuarios (nombre, apellido_paterno, apellido_materno, correo, contrasenia, telefono, rol)
             VALUES (_nombre, _apellido_paterno, _apellido_materno, _correo, contrasenia_encrypt, _telefono, 3);
             INSERT INTO docentes(no_trabajador, division, id_usuario) values (_no_control, _division, last_insert_id());
-            SET mensaje = concat('Se ha registrado correctamente, Ya puede iniciar sesión con el correo: ', _correo);
+            SET mensaje = concat('Se ha registrado correctamente, Ya se puede iniciar sesión con el correo: ', _correo);
         COMMIT;
     END IF;
     SET autocommit = 1;
@@ -1244,7 +1244,7 @@ select  * from ejemplares where concat(observaciones) like concat('%', palabra, 
 end; $$
 
 delimiter $$
-create procedure buscar_ejemplar(palabra varchar(100), out mensaje VARCHAR(255))
+create procedure buscar_ejemplar_ms(palabra varchar(100), out mensaje VARCHAR(255))
 begin
         if not exists (select * from ejemplares where concat(observaciones) like concat('%', palabra, '%') or ejemplar like palabra) then
         set mensaje = 'No hay un registro con esas caracteristicas';
@@ -1253,7 +1253,6 @@ select * from ejemplares where concat(observaciones) like concat('%', palabra, '
 end if;
 end; $$
 
-DROP PROCEDURE Insertar_ejemplar;
 DELIMITER $$
 CREATE PROCEDURE Insertar_ejemplar (_ejemplar integer ,_observaciones varchar(255), _id_libro integer, out mensaje varchar(255))
 BEGIN
@@ -1338,7 +1337,7 @@ END CASE;
 END;$$
 
 delimiter $$
-create procedure  iniciar_prestamo_sala(_id_sala int, ma_nt varchar(100), OUT mensaje varchar(255))
+create procedure  iniciar_prestamo_sala(_id_sala int, ma_nt varchar(100), out mensaje varchar(255))
 begin
     declare _id_usuario int;
     declare ms varchar(100);
@@ -1378,7 +1377,7 @@ begin
             COMMIT;
         end if;
     ELSE
-        set mensaje = 'La matrícula o el número del trabajador no esta registrada, asegurate de que este bien escrita';
+        set mensaje = 'La matrícula o el número del trabajador no esta registrada o no esta mal escrita';
         ROLLBACK;
     end if;
 

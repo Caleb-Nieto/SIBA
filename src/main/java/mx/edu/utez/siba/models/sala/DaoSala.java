@@ -106,9 +106,8 @@ public class DaoSala implements DaoRepository<BeanSala>{
             cstm.setString(4, object.getDescripcion());
             cstm.registerOutParameter(5, Types.VARCHAR);
             cstm.execute();
-            String mensaje = cstm.getString(5);
 
-           return mensaje;
+            return cstm.getString(5);
         }catch(SQLException e){
             Logger.getLogger(DaoSala.class.getName())
                     .log(Level.SEVERE, "Error update " + e.getMessage());
@@ -126,8 +125,7 @@ public class DaoSala implements DaoRepository<BeanSala>{
             cstm.setLong(1, id);
             cstm.registerOutParameter(2, Types.VARCHAR);
             cstm.executeUpdate();
-            String mensaje = cstm.getString(2);
-            return mensaje;
+            return cstm.getString(2);
         }catch(SQLException e){
             Logger.getLogger(DaoSala.class.getName())
                     .log(Level.SEVERE, "Error delete " + e.getMessage());

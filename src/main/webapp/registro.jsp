@@ -55,7 +55,7 @@
                         </div>
                         <div class="col-md-7">
                             <label for="validationCustom04" class="fw-bold">Correo electrónico:</label>
-                            <input type="email" class="form-control" id="validationCustom04" placeholder="example@utez.edu.com" name="correo" maxlength="40" required>
+                            <input type="email" class="form-control" id="validationCustom04" placeholder="example@utez.edu.mx" name="correo" maxlength="40" required>
                             <div class="invalid-feedback">
                                 Verifique la extensión del correo
                             </div>
@@ -69,16 +69,16 @@
                         </div>
                         <div class="col-md-5">
                             <label for="validationCustom06" class="fw-bold">Teléfono:</label>
-                            <input type="text" class="form-control" id="validationCustom06" name="telefono" maxlength="13" required>
+                            <input type="text" class="form-control" id="validationCustom06" name="telefono" maxlength="12" pattern="[0-9\s]*" required>
                             <div class="invalid-feedback">
-                                Campo obligatorio
+                                Ingrese un número de teléfono válido
                             </div>
                         </div>
                         <div class="col-md-7">
                             <!--Botones de opciones-->
                             <label for="rol" class="fw-bold">Seleccione su rol:</label>
                             <select class="form-select" id="rol" name="rol" required>
-                                <option selected disabled>Opciones</option>
+                                <option selected value="" disabled>Opciones</option>
                                 <c:if test="${rol == 1}">
                                     <option>Bibliotecario</option>
                                 </c:if>
@@ -158,7 +158,7 @@
                                             <div class="col-12">
                                                 <label for="validationCustom08" class="fw-bold">Carrera:</label>
                                                 <select class="form-select" id="carrera" name="carrera" required>
-                                                  <option selected disabled>Opciones</option>
+                                                  <option selected value="" disabled>Opciones</option>
                                                   <option value="Desarrollo de Software Multiplataforma">Desarrollo de Software Multiplataforma</option>
                                                   <option value="Infraestructura de Redes Digitales">Infraestructura de Redes Digitales</option>
                                                   <option value="Diseño Digital">Diseño Digital</option>
@@ -179,7 +179,7 @@
                                             <div class="col-md-12">
                                                 <label for="grado" class="fw-bold">Seleccione su grado:</label>
                                                 <select class="form-select" id="grado" name="grado" required>
-                                                    <option selected disabled>Opciones</option>
+                                                    <option selected value="" disabled>Opciones</option>
                                                     <option value="1">1</option>
                                                     <option value="2">2</option>
                                                     <option value="3">3</option>
@@ -219,7 +219,7 @@
                                             <div class="col-md-12">
                                                 <label for="validationCustom11" class="fw-bold">División academica:</label>
                                                 <select class="form-select" id="division" name="division" required>
-                                                  <option selected disabled>Opciones</option>
+                                                  <option selected value="" disabled>Opciones</option>
                                                   <option value="DATID">DATID</option>
                                                   <option value="DATEFI">DATEFI</option>
                                                   <option value="DACEA">DACEA</option>

@@ -50,7 +50,7 @@
             </div>
             <div class="col-md-5">
               <label for="validationCustom06" class="fw-bold">Teléfono:</label>
-              <input type="text" class="form-control" id="validationCustom06" name="telefono" value="${usuario.telefono}" maxlength="13" required>
+              <input type="text" class="form-control" id="validationCustom06" name="telefono" value="${usuario.telefono}" pattern="[0-9\s]*" maxlength="13" required>
               <div class="invalid-feedback">
                 Campo obligatorio
               </div>

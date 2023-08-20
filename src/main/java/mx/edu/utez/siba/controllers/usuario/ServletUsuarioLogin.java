@@ -80,7 +80,6 @@ public class ServletUsuarioLogin extends HttpServlet {
                         }else{
                             session.setAttribute("user", usuario);
                             session.setAttribute("rol", usuario.getRol());
-
                         }
                         if (usuario.getRol() == 1) {
                             urlRedirect = "/api/libro/libros";
@@ -136,13 +135,19 @@ public class ServletUsuarioLogin extends HttpServlet {
 
                 session = req.getSession();
 
+                int rol = 0;
 
+                if(session.getAttribute("rol") instanceof Number){
+                     rol = (((Number) session.getAttribute("rol")).intValue());
+                }
 
                 if(mensaje.contains("correctamente")){
-                    if (usuario.getRol() == 1) {
+                    if (rol == 1) {
                         urlRedirect = "/api/usuario/usuarios?result=true&message="+ URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
-                    } else{
-                        urlRedirect = "/api/libro/libros";
+                    } else if(rol == 2){
+                        urlRedirect = "/api/libro/libros?result=true&message="+ URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    }else{
+                        urlRedirect = "/api/login?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                     }
                 }else{
                     urlRedirect = "/api/register-view?result=false&message="+ URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
