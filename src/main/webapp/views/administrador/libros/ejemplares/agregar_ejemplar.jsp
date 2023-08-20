@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Registrar Autor</title>
+  <title>Registrar Ejemplar</title>
   <jsp:include page="${pageContext.request.contextPath}/layouts/navbar.jsp"/>
   <jsp:include page="${pageContext.request.contextPath}/layouts/header.jsp"/>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/mainStyle.css">
@@ -12,19 +12,19 @@
 <div class="container-fluid">
   <div class="col align-middle">
     <div class="card position-absolute top-50 start-50 translate-middle" style="width: 20%">
-      <div class="card-header text-white text-center" style="background: rgb(0, 148, 117)"><h5>REGISTRAR EJEMPLAR</h5></div>
+      <div class="card-header text-white text-center" style="background: rgb(0, 148, 117)"><h5>REGISTRAR EJEMPLARES</h5></div>
       <div class="card-body">
-        <form id="autor-form" class="needs-validation" novalidate action="/api/ejemplar/save" method="post">
+        <form id="ejemplar-form" class="needs-validation" novalidate action="/api/ejemplar/save" method="post">
           <div class="form-group mb-3">
-            <label for="nombre" class="fw-bold">Identificador del ejemplar:</label>
-            <input type="text" name="nombre" id="nombre" class="form-control" required maxlength="40"/>
+            <label for="ejemplar" class="fw-bold">Ejemplar:</label>
+            <input type="text" name="ejemplar" id="ejemplar" class="form-control" required maxlength="40"/>
             <div class="invalid-feedback">Campo obligatorio</div>
           </div>
           <div class="form-group mb-3">
             <div class="row">
               <div class="col">
-                <label for="am" class="fw-bold">Observaciones:</label>
-                <input type="text" name="apellido_materno" id="am" class="form-control" required maxlength="40"/>
+                <label for="ap" class="fw-bold">Observaciones:</label>
+                <input type="text" name="observaciones" id="ap" class="form-control" required maxlength="40"/>
                 <div class="invalid-feedback">Campo obligatorio</div>
               </div>
             </div>
@@ -32,7 +32,7 @@
           <div class="form-group mb-3">
             <div class="row">
               <div class="col text-center">
-                <a href="/api/libro/libros" class="btn btn-outline-danger mr-2">
+                <a href="/api/ejemplar/ejemplares" class="btn btn-outline-danger mr-2">
                   Cancelar
                 </a>
                 <button id="enviar" type="submit" class="btn btn-success mr-2 " style="background: rgb(0, 148, 117);">Aceptar</button>
@@ -49,7 +49,7 @@
   //Codigo que se debe utilizar para validar fomularios de registros o actualizaciones.
 
   //Codigo para validar un formulario de registro
-  const form = document.getElementById("autor-form");
+  const form = document.getElementById("ejemplar-form");
   const btn = document.getElementById("enviar");
   form.addEventListener('submit', event => {
     btn.innerHTML = `<div class="d-flex justify-content-center">
@@ -62,7 +62,7 @@
       event.preventDefault();
       event.stopPropagation();
       btn.classList.remove("disabled");
-      btn.innerHTML = 'AGREGAR SALA';
+      btn.innerHTML = 'Aceptar';
     }
     form.classList.add("was-validated");
   }, false);

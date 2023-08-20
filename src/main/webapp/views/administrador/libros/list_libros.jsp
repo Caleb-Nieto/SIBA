@@ -93,7 +93,7 @@
                                                 <form method="get" action="/api/ejemplar/ejemplar-view-save">
                                                     <input hidden value="${libro.id}" name="id_libro"/>
                                                     <div class="d-grid gap-1 mx-auto">
-                                                        <button type="submit" class="btn btn-success btn-sm" disabled>
+                                                        <button type="submit" class="btn btn-success btn-sm">
                                                             Agregar ejemplar
                                                         </button>
                                                     </div>
@@ -116,7 +116,7 @@
                                                     <div class="d-grid gap-1 mx-auto">
                                                         <form method="get" action="/api/ejemplar/ejemplares">
                                                             <input hidden value="${libro.id}" name="id_libro"/>
-                                                                <button type="submit" class="btn btn-secondary btn-sm" disabled>
+                                                                <button type="submit" class="btn btn-secondary btn-sm">
                                                                     Ver ejemplares
                                                                 </button>
                                                         </form>

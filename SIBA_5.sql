@@ -1199,7 +1199,7 @@ select count(*) as total from Ejemplares;
 end; $$
 
 delimiter $$
-create procedure consultar_ejemplares(inicio int, limite int)
+create procedure consultar_ejemplares(inicio int, limite int, _id_libro int)
 begin
 SELECT
     ejemplares.ejemplar,
@@ -1207,6 +1207,7 @@ SELECT
     libros.id_libro
 FROM ejemplares
          INNER JOIN libros ON ejemplares.id_libro = libros.id_libro
+where _id_libro = id_libro
     LIMIT inicio, limite;
 end; $$
 
@@ -1239,7 +1240,7 @@ WHEN LENGTH(_observaciones) > 255  then set mensaje = 'Observación de ejemplar 
 ROLLBACK;
 ELSE
 		INSERT INTO ejemplares (ejemplar,observaciones,id_libro) VALUES (_ejemplar, _observaciones, _id_libro);
-		SET mensaje = 'Registro de ejemplar exitoso';
+		SET mensaje = 'Se ha registrado el ejemplar correctamente';
 COMMIT;
 END CASE;
     SET autocommit = 1;

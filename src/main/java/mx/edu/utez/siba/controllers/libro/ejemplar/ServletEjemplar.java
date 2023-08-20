@@ -59,6 +59,10 @@ public class ServletEjemplar extends HttpServlet {
 
             case "/api/ejemplar/ejemplar-view-save":
 
+                String id_libro = request.getParameter("id_libro");
+
+                request.setAttribute("id_libro",id_libro);
+
                 redirect = "/views/administrador/libros/ejemplares/agregar_ejemplares.jsp";
                 break;
         }
