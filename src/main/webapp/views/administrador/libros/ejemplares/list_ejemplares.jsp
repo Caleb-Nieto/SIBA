@@ -13,7 +13,11 @@
 <div class="container">
   <div class="row" style="margin-top: 100px;">
     <div class="container-fluid mb-4" style="background: #045c4a; color: white;">
-      <h3 class="text-white text-center">Ejemplares</h3>
+      <h3 class="text-white text-center">
+        Ejemplares de: <c:out value="${titulo}"/>
+        <br/>
+        ISBN: <c:out value="${isbn}"/>
+      </h3>
     </div>
     <div class="col-12 mb-12 mt-12 mb-4">
       <div class="row">
@@ -42,7 +46,6 @@
       <tr class="table-success">
         <th scope="col">Ejemplar</th>
         <th scope="col">Observaciones</th>
-        <th scope="col">Libro</th>
         <th scope="col">Opciones</th>
       </tr>
       </thead>
@@ -51,19 +54,6 @@
         <tr>
           <td><c:out value="${ejemplar.ejemplar}"/></td>
           <td><c:out value="${ejemplar.observaciones}"/></td>
-          <td><c:out value="${ejemplar.id_libro}"/>
-          <td>
-            <div class="dropdown">
-              <button class="btn btn-secondary btn-sm dropdown-toggle col-12" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Ejemplares
-              </button>
-              <ul class="dropdown-menu">
-                <c:forEach items="${ejemplar.libro}" var="libro">
-                  <li><c:out value="${libro.id_libro}"/></li>
-                </c:forEach>
-              </ul>
-            </div>
-          </td>
           <td class="d-grid d-md-flex justify-content-md-center">
             <c:if test="${empty ejemplar.ejemplar}">
               <form method="get" action="/api/ejemplar/ejemplar-view-update">

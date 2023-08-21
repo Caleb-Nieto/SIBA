@@ -30,7 +30,7 @@
                 </div>
                 <c:if test="${rol == 1}">
                     <div class="col">
-                        <a href="/api/libro/libro-view-save" class="btn btn-success">Agregar Libro</a>
+                        <a href="/api/libro/libro-view-save" class="btn btn-success">Agregar libro</a>
                     </div>
                 </c:if>
             </div>
@@ -90,13 +90,13 @@
                                         </c:if>
                                         <c:if test="${rol == 1}">
                                             <div class="row">
-                                                <form method="get" action="/api/ejemplar/ejemplar-view-save">
+                                                <form method="get" action="/api/ejemplar/ejemplares">
                                                     <input hidden value="${libro.id}" name="id_libro"/>
-                                                    <div class="d-grid gap-1 mx-auto">
-                                                        <button type="submit" class="btn btn-success btn-sm">
-                                                            Agregar ejemplar
-                                                        </button>
-                                                    </div>
+                                                    <input hidden value="${libro.titulo}" name="titulo"/>
+                                                    <input hidden value="${libro.isbn}" name="isbn"/>
+                                                    <button type="submit" class="btn btn-secondary btn-sm w-100">
+                                                        Ver ejemplares
+                                                    </button>
                                                 </form>
                                             </div>
                                             <div class="row mt-2">
@@ -112,16 +112,6 @@
                                                 </c:if>
                                             </div>
                                             <div class="row mt-2">
-                                                <c:if test="${libro.ejemplares > 1}">
-                                                    <div class="d-grid gap-1 mx-auto">
-                                                        <form method="get" action="/api/ejemplar/ejemplares">
-                                                            <input hidden value="${libro.id}" name="id_libro"/>
-                                                                <button type="submit" class="btn btn-secondary btn-sm">
-                                                                    Ver ejemplares
-                                                                </button>
-                                                        </form>
-                                                    </div>
-                                                </c:if>
                                                 <c:if test="${libro.ejemplares == 1}">
                                                     <form class="deleteForm" method="post" action="/api/libro/delete">
                                                             <input hidden value="${libro.id}" name="id_libro"/>

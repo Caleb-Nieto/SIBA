@@ -12,45 +12,48 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class DaoEjemplar implements DaoRepository<BeanEjemplar> {
+public class DaoEjemplar{
     private Connection conn;
     private CallableStatement cstm;
     private ResultSet rs;
 
-    @Override
-    public List<BeanEjemplar> findAll(int inicio, int limite) {
+
+    public List<BeanEjemplar> findAll(Long id_libro, int inicio, int limite) {
         List<BeanEjemplar> ejemplares = new ArrayList<>();
         try {
             conn = new MySQLConnection().getConnection();
-            String query = "call consultar_ejemplares(?, ?);";
+            String query = "call consultar_ejemplares(?, ?, ?);";
             cstm = conn.prepareCall(query);
-            cstm.setInt(1, inicio);
-            cstm.setInt(2, limite);
+            cstm.setLong(1, id_libro);
+            cstm.setInt(2, inicio);
+            cstm.setInt(3, limite);
             cstm.execute();
             rs = cstm.getResultSet();
 
             while (rs.next()) {
                 BeanEjemplar ejemplar = new BeanEjemplar();
                 ejemplar.setId_ejemplar(rs.getLong("id_ejemplar"));
+                ejemplar.setEjemplar(rs.getInt("ejemplar"));
                 ejemplar.setObservaciones(rs.getString("observaciones"));
 
-                BeanLibro libro = new BeanLibro();
+                BeanLibro l = new BeanLibro();
+                l.setId(rs.getLong("id_libro"));
 
-                ejemplar.setLibro(libro);
+                ejemplar.setLibro(l);
 
                 ejemplares.add(ejemplar);
 
             }
         } catch (SQLException e) {
             Logger.getLogger(DaoEjemplar.class.getName())
-                    .log(Level.SEVERE, "Error findAll" + e.getSQLState());
+                    .log(Level.SEVERE, "Error findAll " + e.getSQLState());
         } finally {
             close();
         }
         return ejemplares;
     }
 
-    @Override
+
     public BeanEjemplar findOne(Long id) {
         try {
             conn = new MySQLConnection().getConnection();
@@ -76,7 +79,7 @@ public class DaoEjemplar implements DaoRepository<BeanEjemplar> {
         return null;
     }
 
-    @Override
+
     public String save(BeanEjemplar object) {
         try{
             conn = new MySQLConnection().getConnection();
@@ -99,7 +102,7 @@ public class DaoEjemplar implements DaoRepository<BeanEjemplar> {
         return null;
     }
 
-    @Override
+
     public String update(BeanEjemplar object) {
 
         try {
@@ -123,7 +126,7 @@ public class DaoEjemplar implements DaoRepository<BeanEjemplar> {
         return null;
     }
 
-    @Override
+
     public String delete(Long id) {
         try{
             conn = new MySQLConnection().getConnection();

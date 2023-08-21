@@ -1377,7 +1377,7 @@ begin
             COMMIT;
         end if;
     ELSE
-        set mensaje = 'La matrícula o el número del trabajador no esta registrada o no esta mal escrita';
+        set mensaje = 'La matrícula o el número del trabajador no esta registrada o esta mal escrita';
         ROLLBACK;
     end if;
 

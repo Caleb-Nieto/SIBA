@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import mx.edu.utez.siba.models.libro.DaoLibro;
 import mx.edu.utez.siba.models.libro.ejemplar.BeanEjemplar;
 import mx.edu.utez.siba.models.libro.ejemplar.DaoEjemplar;
 import mx.edu.utez.siba.models.libro.BeanLibro;
@@ -27,7 +28,7 @@ import java.util.List;
 public class ServletEjemplar extends HttpServlet {
     private String action;
     private String redirect;
-    private String id_ejemplar, observaciones;
+    private String id_ejemplar, observaciones, id_libro;
     private BeanLibro libro;
     private String mensaje;
     private BeanEjemplar ejemplar;
@@ -39,7 +40,30 @@ public class ServletEjemplar extends HttpServlet {
         action = request.getServletPath();
         switch(action){
             case "/api/ejemplar/ejemplares":
+                int pagina = 1;
+                int limite = 12;
+                if (request.getParameter("page") != null) {
+                    pagina = Integer.parseInt(request.getParameter("page"));
+                }
 
+                int inicio = (pagina -1) * limite;
+
+                id_libro = request.getParameter("id_libro");
+                String titulo = request.getParameter("titulo");
+                String isbn = request.getParameter("isbn");
+
+                ejemplares = new DaoEjemplar().findAll(Long.parseLong(id_libro), inicio, limite);
+
+                request.setAttribute("ejemplares", ejemplares);
+                request.setAttribute("titulo", titulo);
+                request.setAttribute("isbn", isbn);
+                request.setAttribute("id_libro", id_libro);
+
+                int totalRegistros = new DaoLibro().count();
+                int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
+
+                request.setAttribute("totalPaginas", totalPaginas);
+                request.setAttribute("paginaActual", pagina);
 
                 redirect = "/views/administrador/libros/ejemplares/list_ejemplares.jsp";
                 break;

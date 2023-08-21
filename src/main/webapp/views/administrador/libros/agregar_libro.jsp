@@ -35,7 +35,6 @@
                 <select name="autores_ids" id="autores_ids" required class="form-select" multiple>
                   <option value="" selected disabled>Seleccione...</option>
                   <c:forEach var="autor" items="${autores}">
-                    <h1><c:out value="${autor.nombre}"/></h1>
                     <option value="${autor.id_autor}"><c:out value="${autor.nombre}"/> <c:out
                             value="${autor.apellido_paterno}"/> <c:out
                             value="${autor.apellido_materno}"/></option>

@@ -66,17 +66,6 @@
                     <div class="form-group mb-3">
                         <div class="row">
                             <div class="col">
-                                <label for="id_ejemplar" class="fw-bold"></label>
-                                <label for="id_ejemplar" class="fw-bold">Identificador del ejemplar:</label>
-                                <input type="number" name="id_ejemplar" id="id_ejemplar" class="form-control" min="0" disabled value=""/>
-                            </div>
-                            <div class="col">
-                                <label for="observaciones" class="fw-bold"></label>
-                                <label for="observaciones" class="fw-bold">Observaciones:</label>
-                                <input type="text" name="observaciones" id="observaciones" class="form-control" required  maxlength="20"/>
-                                <div class="invalid-feedback">Campo obligatorio</div>
-                            </div>
-                            <div class="col">
                                 <label for="ubicacion_id" class="fw-bold">Ubicación actual:</label>
                                 <label><c:out value="Pasillo ${libro.ubicacion.pasillo}, sección ${libro.ubicacion.seccion}, estante ${libro.ubicacion.estante}"/></label>
                                 <select name="ubicacion_id" id="ubicacion_id" class="form-select">
