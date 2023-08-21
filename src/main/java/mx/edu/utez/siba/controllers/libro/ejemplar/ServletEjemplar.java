@@ -14,6 +14,7 @@ import mx.edu.utez.siba.models.libro.BeanLibro;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet(name="ServletEjemplar", urlPatterns = {
@@ -38,21 +39,7 @@ public class ServletEjemplar extends HttpServlet {
         action = request.getServletPath();
         switch(action){
             case "/api/ejemplar/ejemplares":
-                int pagina = 1;
-                int limite = 12;
-                if (request.getParameter("page") != null) {
-                    pagina = Integer.parseInt(request.getParameter("page"));
-                }
-                int inicio = (pagina -1) * limite;
 
-                ejemplares = new DaoEjemplar().findAll(inicio, limite);
-
-                request.setAttribute("ejemplares", ejemplares);
-                int totalRegistros = new DaoEjemplar().count();
-                int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
-
-                request.setAttribute("totalPaginas", totalPaginas);
-                request.setAttribute("paginaActual", pagina);
 
                 redirect = "/views/administrador/libros/ejemplares/list_ejemplares.jsp";
                 break;
