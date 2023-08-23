@@ -200,11 +200,6 @@ public class ServletLibros extends HttpServlet {
                 libro.setTitulo(request.getParameter("titulo").trim());
                 libro.setEditorial(request.getParameter("editorial").trim());
 
-                ejemplar = new BeanEjemplar();
-                ejemplar.setId_ejemplar(123L);
-                ejemplar.setObservaciones(request.getParameter("observaciones").trim());
-
-
                 ubicacion = new BeanUbicacion();
                 ubicacion.setId(Long.parseLong(request.getParameter("ubicacion_id")));
 

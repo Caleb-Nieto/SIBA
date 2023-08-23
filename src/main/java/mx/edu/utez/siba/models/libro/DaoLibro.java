@@ -170,29 +170,28 @@ public class DaoLibro{
         String mensaje = "algo falla";
         try{
             conn = new MySQLConnection().getConnection();
-            String query = "call actualizar_libro(?, ?, ?, ?, ?, ?, ?, ?);";
+            String query = "call actualizar_libro(?, ?, ?, ?, ?, ?, ?);";
             cstm = conn.prepareCall(query);
             cstm.setLong(1, libro.getId());
             cstm.setString(2, libro.getTitulo());
             cstm.setString(3, libro.getEditorial());
             cstm.setLong(4, libro.getUbicacion().getId());
 
-            cstm.setString(5, ejemplar.getObservaciones());
 
             if(libro.getFile() != null && !libro.getFileName().isEmpty()){
-                cstm.setString(6, libro.getFileName());
-                cstm.setBytes(7, libro.getFile());
+                cstm.setString(5, libro.getFileName());
+                cstm.setBytes(6, libro.getFile());
             }else{
-                cstm.setNull(6, Types.VARCHAR);
-                cstm.setNull(7, Types.BLOB);
+                cstm.setNull(5, Types.VARCHAR);
+                cstm.setNull(6, Types.BLOB);
             }
 
 
-            cstm.registerOutParameter(8, Types.VARCHAR);
+            cstm.registerOutParameter(7, Types.VARCHAR);
             cstm.execute();
 
 
-            mensaje = cstm.getString(8);
+            mensaje = cstm.getString(7);
 
 
         }catch (SQLException e){

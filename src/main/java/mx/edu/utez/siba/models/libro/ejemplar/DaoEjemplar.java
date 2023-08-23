@@ -37,6 +37,8 @@ public class DaoEjemplar{
                 ejemplar.setObservaciones(rs.getString("observaciones"));
 
                 BeanLibro l = new BeanLibro();
+                l.setTitulo(rs.getString("titulo"));
+                l.setIsbn(rs.getString("isbn"));
                 l.setId(rs.getLong("id_libro"));
 
                 ejemplar.setLibro(l);
@@ -65,9 +67,13 @@ public class DaoEjemplar{
             BeanEjemplar ejemplar = new BeanEjemplar();
             if (rs.next()) {
                 ejemplar.setId_ejemplar(rs.getLong("id_ejemplar"));
+                ejemplar.setEjemplar(rs.getInt("ejemplar"));
                 ejemplar.setObservaciones(rs.getString("observaciones"));
-                BeanLibro libro = new BeanLibro();
-                ejemplar.setLibro(libro);
+
+                BeanLibro l = new BeanLibro();
+                l.setId(rs.getLong("id_libro"));
+
+                ejemplar.setLibro(l);
             }
             return ejemplar;
         } catch (SQLException e) {
@@ -85,14 +91,13 @@ public class DaoEjemplar{
             conn = new MySQLConnection().getConnection();
             String query = "call Insertar_ejemplar(?, ?, ?, ?);";
             cstm = conn.prepareCall(query);
-            cstm.setLong(1, object.getId_ejemplar());
+            cstm.setLong(1, object.getEjemplar());
             cstm.setString(2, object.getObservaciones());
             cstm.setLong(3, object.getLibro().getId());
             cstm.registerOutParameter(4, Types.VARCHAR);
             cstm.execute();
 
-            String mensaje = cstm.getString(4);
-            return  mensaje;
+            return cstm.getString(4);
         }catch(SQLException e){
             Logger.getLogger(DaoEjemplar.class.getName())
                     .log(Level.SEVERE, "Error save " + e.getMessage());
@@ -107,13 +112,15 @@ public class DaoEjemplar{
 
         try {
             conn = new MySQLConnection().getConnection();
-            String query = "call actualizar_ejemplar(?, ?, ?)";
+            String query = "call actualizar_ejemplar(?, ?, ?, ?, ?);";
             cstm = conn.prepareCall(query);
             cstm.setLong(1, object.getId_ejemplar());
-            cstm.setString(2, object.getObservaciones());
-            cstm.registerOutParameter(3, Types.VARCHAR);
+            cstm.setInt(2, object.getEjemplar());
+            cstm.setString(3, object.getObservaciones());
+            cstm.setLong(4, object.getLibro().getId());
+            cstm.registerOutParameter(5, Types.VARCHAR);
             cstm.execute();
-            String mensaje = cstm.getString(3);
+            String mensaje = cstm.getString(5);
 
             return mensaje;
 

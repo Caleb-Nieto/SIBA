@@ -632,7 +632,7 @@ END;$$
 
 DELIMITER $$
 CREATE PROCEDURE actualizar_libro (_id int, _titulo VARCHAR(500), _editorial VARCHAR(500),
-    _id_ub int, _observaciones varchar(500), _file_name varchar(100), _file MEDIUMBLOB, out mensaje varchar(255))
+    _id_ub int, _file_name varchar(100), _file MEDIUMBLOB, out mensaje varchar(255))
 BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
@@ -650,7 +650,6 @@ BEGIN
             IF (_file_name IS NOT NULL) AND (_file IS NOT NULL) THEN
                 UPDATE libros_img SET file_name = _file_name, file = _file WHERE id_libro = _id;
             END IF;
-            UPDATE ejemplares SET observaciones = _observaciones WHERE id_libro = _id;
             set mensaje = 'El libro se ha actualizado correctamente';
 			COMMIT;
     end case;
@@ -1220,21 +1219,22 @@ select count(*) as total from ejemplares;
 end; $$
 
 delimiter $$
-create procedure consultar_ejemplares(inicio int, limite int)
+create procedure consultar_ejemplares(_id_libro int, inicio int, limite int)
 begin
-SELECT
-    ejemplares.ejemplar,
-    ejemplares.observaciones,
-    libros.id_libro
-FROM ejemplares
-         INNER JOIN libros ON ejemplares.id_libro = libros.id_libro
-    LIMIT inicio, limite;
+    SELECT
+        id_ejemplar,
+        ejemplar,
+        observaciones,
+        l.id_libro,
+        l.titulo,
+        l.isbn
+    FROM ejemplares inner join libros l on ejemplares.id_libro = l.id_libro  where ejemplares.id_libro = _id_libro order by ejemplar LIMIT inicio, limite;
 end; $$
 
 delimiter $$
-create procedure get_ejemplar(_ejemplar integer)
+create procedure get_ejemplar(_id_ejemplar integer)
 begin
-select * from ejemplares where ejemplar=_ejemplar;
+    select * from ejemplares where id_ejemplar=_id_ejemplar;
 end;$$
 
 delimiter $$
@@ -1256,45 +1256,46 @@ end; $$
 DELIMITER $$
 CREATE PROCEDURE Insertar_ejemplar (_ejemplar integer ,_observaciones varchar(255), _id_libro integer, out mensaje varchar(255))
 BEGIN
-	DECLARE EXIT HANDLER FOR SQLEXCEPTION
-BEGIN
-ROLLBACK;
-SET mensaje = 'El identificador del libro debe ser de tipo númerico';
-END;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+        BEGIN
+            ROLLBACK;
+            SET mensaje = 'El identificador del libro debe ser de tipo númerico';
+        END;
     SET autocommit = 0;
-START TRANSACTION;
-CASE
-		WHEN EXISTS (SELECT * FROM ejemplares WHERE ejemplar=_ejemplar) THEN set mensaje =  'Ya existe un ejemplar con ese identificador';
-ROLLBACK;
-WHEN LENGTH(_observaciones) > 255  then set mensaje = 'Observación de ejemplar demasiado larga';
-ROLLBACK;
-ELSE
-		INSERT INTO ejemplares (ejemplar,observaciones,id_libro) VALUES (_ejemplar, _observaciones, _id_libro);
-		SET mensaje = 'Registro de ejemplar exitoso';
-COMMIT;
-END CASE;
+    START TRANSACTION;
+    CASE
+        WHEN EXISTS (SELECT * FROM ejemplares WHERE ejemplar=_ejemplar and id_libro = _id_libro) THEN
+            set mensaje =  'Ya existe un ejemplar con ese identificador';
+            ROLLBACK;
+        WHEN LENGTH(_observaciones) > 255  then set mensaje = 'Observación de ejemplar demasiado larga';
+                                                ROLLBACK;
+        ELSE
+            INSERT INTO ejemplares (ejemplar,observaciones,id_libro) VALUES (_ejemplar, _observaciones, _id_libro);
+            SET mensaje = 'Se insertó el ejemplar correctamente';
+            COMMIT;
+        END CASE;
     SET autocommit = 1;
 END;$$
 
 DELIMITER $$
-create procedure eliminar_ejemplar(_ejemplar Integer, OUT mensaje varchar(255))
+create procedure eliminar_ejemplar(_id_ejemplar Integer, OUT mensaje varchar(255))
 begin
-DECLARE EXIT HANDLER FOR SQLEXCEPTION
-BEGIN
-ROLLBACK;
-SET mensaje = 'Ha ocurrido un error';
-END;
-	SET autocommit = 0;
-START TRANSACTION;
-IF EXISTS (SELECT ejemplar FROM ejemplares WHERE _ejemplar=ejemplar) THEN
-DELETE FROM ejemplares
-WHERE _ejemplar=ejemplar;
-SET mensaje =  'Se ha elimindado el ejemplar correctamente';
-COMMIT;
-ELSE
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+        BEGIN
+            ROLLBACK;
+            SET mensaje = 'El ejemplar esta en prestamo';
+        END;
+    SET autocommit = 0;
+    START TRANSACTION;
+    IF EXISTS (SELECT * FROM ejemplares WHERE id_ejemplar=_id_ejemplar) THEN
+        DELETE FROM ejemplares
+        WHERE id_ejemplar=_id_ejemplar;
+        SET mensaje =  'Se ha elimindado el ejemplar correctamente';
+        COMMIT;
+    ELSE
         SET mensaje =  'El ejemplar no existe';
-ROLLBACK;
-END IF;
+        ROLLBACK;
+    END IF;
     SET autocommit = 1;
 end;$$
 
@@ -1309,30 +1310,27 @@ begin
 end; $$
 
 DELIMITER $$
-CREATE PROCEDURE actualizar_ejemplar (_ejemplar INT,_observaciones VARCHAR(255),OUT mensaje VARCHAR(255))
+CREATE PROCEDURE actualizar_ejemplar (_id_ejemplar int ,_ejemplar integer ,_observaciones varchar(255), _id_libro integer, out mensaje varchar(255))
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
-BEGIN
-ROLLBACK;
-SET mensaje = 'Ha ocuurido un error';
-END;
-
+        BEGIN
+            ROLLBACK;
+            SET mensaje = 'El identificador del libro debe ser de tipo númerico';
+        END;
     SET autocommit = 0;
-START TRANSACTION;
-
-CASE
-        WHEN LENGTH(_observaciones) > 254 THEN
-            SET mensaje = 'Observación de ejemplar demasiado larga';
-ROLLBACK;
-WHEN NOT EXISTS (SELECT * FROM Ejemplares WHERE ejemplar = _ejemplar) THEN
-            SET mensaje = 'No existe ese ejemplar';
-ROLLBACK;
-ELSE
-UPDATE Ejemplares SET observaciones = _observaciones WHERE ejemplar = _ejemplar;
-SET mensaje = 'Se ha actualizado el ejemplar correctamente';
-COMMIT;
-END CASE;
-
+    START TRANSACTION;
+    CASE
+        WHEN EXISTS (SELECT * FROM ejemplares WHERE ejemplar=_ejemplar and id_libro = _id_libro and id_ejemplar <> _id_ejemplar)THEN
+            set mensaje =  'Ya existe un ejemplar con ese identificador';
+            ROLLBACK;
+        WHEN LENGTH(_observaciones) > 255  then set mensaje = 'Observación de ejemplar demasiado larga';
+                                                ROLLBACK;
+        ELSE
+            update ejemplares set ejemplar = _ejemplar, observaciones = _observaciones, id_libro = _id_libro
+            where id_ejemplar = _id_ejemplar;
+            SET mensaje = 'Se actualizó el ejemplar correctamente';
+            COMMIT;
+        END CASE;
     SET autocommit = 1;
 END;$$
 

@@ -1,52 +1,45 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <title>Editar Ejemplar</title>
+    <title>Actualizar ejemplar</title>
     <jsp:include page="${pageContext.request.contextPath}/layouts/navbar.jsp"/>
     <jsp:include page="${pageContext.request.contextPath}/layouts/header.jsp"/>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/mainStyle.css">
 </head>
-
-<style>
-    .form-group-divider {
-        border-top: 2px solid rgb(0, 148, 117);
-        margin-top: 20px;
-        padding-top: 20px;
-    }
-</style>
 <body>
 <div class="container-fluid">
     <div class="col align-middle">
-        <div class="card position-absolute top-50 start-50 translate-middle" style="width: 60%;">
-            <div class="card-header text-white text-center bg-primary"><h5>ACTUALIZAR EJEMPLAR</h5></div>
+        <div class="card position-absolute top-50 start-50 translate-middle" style="width: 20%">
+            <div class="card-header text-white bg-primary text-center"><h5>Actualizar ejemplar</h5></div>
             <div class="card-body">
-                <form id="ejemplar-form" class="needs-validation" novalidate action="/api/ejemplar/update" method="post" enctype="multipart/form-data">
-                    <label for="ejemplar" ></label>
-                    <input hidden value="${ejemplar.id}" id="ejemplar" name="ejemplar" />
+                <form id="ejemplar-form" class="needs-validation" novalidate action="/api/ejemplar/update" method="post">
+                    <input value="${ejemplar.libro.id}" name="id_libro" hidden>
+                    <input value="${ejemplar.id_ejemplar}" name="id_ejemplar" hidden>
+                    <div class="form-group mb-3">
+                        <label for="ejemplar" class="fw-bold">Identificador de ejemplar:</label>
+                        <input type="number" name="ejemplar" value="${ejemplar.ejemplar}" id="ejemplar" class="form-control" required min="0"/>
+                        <div class="invalid-feedback">Campo obligatorio</div>
+                    </div>
                     <div class="form-group mb-3">
                         <div class="row">
                             <div class="col">
-                                <label for="observaciones" class="fw-bold">Título:</label>
-                                <input type="text" name="observaciones" id="observaciones" class="form-control" required maxlength="50" value="${ejemplar.observaciones}" />
+                                <label for="ap" class="fw-bold">Observaciones:</label>
+                                <input type="text" name="observaciones" value="${ejemplar.observaciones}" id="ap" class="form-control" required maxlength="40"/>
                                 <div class="invalid-feedback">Campo obligatorio</div>
                             </div>
-                        <div class="col-12">
-                            <img class="card-img-top d-block mx-auto" style="height: 260px;width: auto;" src="/api/ejemplar/loadfile?file=${ejemplar.ejemplar}"/>
                         </div>
-                        <div class="card mt-2" id="preview"></div>
                     </div>
                     <div class="form-group mb-3">
                         <div class="row">
                             <div class="col text-center">
-                                <a href="/api/ejemplar/ejemplares" class="btn btn-danger mr-2">
+                                <a href="/api/ejemplar/ejemplares?id_libro=${ejemplar.libro.id}" class="btn btn-outline-danger mr-2">
                                     Cancelar
                                 </a>
-                                <button id="enviar" type="submit" class="btn btn-success mr-2 bg-primary">Actualizar</button>
+                                <button id="enviar" type="submit" class="btn btn-success mr-2  bg-primary">Actualizar</button>
                             </div>
                         </div>
-                    </div>
                     </div>
                 </form>
             </div>
@@ -55,7 +48,6 @@
 </div>
 <jsp:include page="${pageContext.request.contextPath}/layouts/footer.jsp"/>
 <script>
-
     //Codigo que se debe utilizar para validar fomularios de registros o actualizaciones.
 
     //Codigo para validar un formulario de registro
@@ -79,14 +71,20 @@
     //-----------------------------------------
 
 
+    /*Mensaje de la libreria sweetalert que se despliega cuando en la url el parametro message tiene un valor.
+    Despues, en una variable se recoge el mensaje y lo coloca como mensaje en la alerta
+     */
     document.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         const result = urlParams.get('result');
         const mensaje = urlParams.get('message');
         if (result === 'false') {
-            Swal.fire('¡Error!', "Operación no realizada: "+mensaje, 'error')
+            Swal.fire('¡Error!', "Operación no realizada: "+mensaje, 'error');
         }
+
     });
+
+
 </script>
 </body>
 </html>

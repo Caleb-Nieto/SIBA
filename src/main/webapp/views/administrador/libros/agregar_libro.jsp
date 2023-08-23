@@ -23,6 +23,7 @@
       <div class="card-header text-white text-center" style="background: #045c4a"><h5>Registro Libro</h5></div>
       <div class="card-body">
         <form id="libro-form" class="needs-validation" novalidate action="/api/libro/save" method="post" enctype="multipart/form-data">
+          <input hidden value="${id_libro}" name="id_libro">
           <div class="form-group mb-3">
             <div class="row">
               <div class="col">

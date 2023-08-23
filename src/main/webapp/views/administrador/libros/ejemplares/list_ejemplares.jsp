@@ -14,27 +14,19 @@
   <div class="row" style="margin-top: 100px;">
     <div class="container-fluid mb-4" style="background: #045c4a; color: white;">
       <h3 class="text-white text-center">
-        Ejemplares de: <c:out value="${titulo}"/>
+        Ejemplares de: <c:out value="${ejemplares[0].libro.titulo}"/>
         <br/>
-        ISBN: <c:out value="${isbn}"/>
+        ISBN: <c:out value="${ejemplares[0].libro.isbn}"/>
       </h3>
     </div>
     <div class="col-12 mb-12 mt-12 mb-4">
       <div class="row">
-        <div class="col-10">
-          <form action="/api/ejemplar/search" method="get">
-            <div class="row">
-              <div class="col">
-                <input type="search" class="form-control" placeholder="Buscar" name="palabra" id="palabra" maxlength="30">
-              </div>
-              <div class="col">
-                <button type="submit"  class="btn btn-secondary">Buscar</button>
-              </div>
-            </div>
-          </form>
-        </div>
         <div class="col">
-          <a href="/api/ejemplar/ejemplar-view-save" class="btn btn-success">Agregar Ejemplar</a>
+          <form action="/api/ejemplar/ejemplar-view-save" method="get">
+            <input hidden value="${ejemplares[0].libro.titulo}" name="titulo">
+            <input hidden value="${ejemplares[0].libro.id}" name="id_libro">
+            <button type="submit" class="btn btn-success">Agregar Ejemplar</button>
+          </form>
         </div>
       </div>
     </div>
@@ -44,34 +36,34 @@
     <table class="table bg-white text-center">
       <thead>
       <tr class="table-success">
-        <th scope="col">Ejemplar</th>
+        <th scope="col">#</th>
+        <th scope="col">Identificador de ejemplar</th>
         <th scope="col">Observaciones</th>
         <th scope="col">Opciones</th>
       </tr>
       </thead>
       <tbody>
-      <c:forEach items="${ejemplares}" var="ejemplar">
+      <c:forEach items="${ejemplares}" var="ejemplar" varStatus="s">
         <tr>
+          <td><c:out value="${s.count}"/></td>
           <td><c:out value="${ejemplar.ejemplar}"/></td>
           <td><c:out value="${ejemplar.observaciones}"/></td>
           <td class="d-grid d-md-flex justify-content-md-center">
-            <c:if test="${empty ejemplar.ejemplar}">
               <form method="get" action="/api/ejemplar/ejemplar-view-update">
-                <input hidden value="${ejemplar.ejemplar}" name="ejemplar"/>
+                <input hidden value="${ejemplar.id_ejemplar}" name="id_ejemplar"/>
+                <input hidden value="${ejemplares[0].libro.id}" name="id_libro">
                 <button type="submit" class="btn btn-primary btn-sm">
                   Editar
                 </button>
               </form>
-              &nbsp;
+              &nbsp
+            <c:if test="${s.count != 1}">
               <form class="deleteForm" method="post" action="/api/ejemplar/delete">
-                <input hidden value="${ejemplar.ejemplar}" name="ejemplar"/>
+                <input hidden value="${ejemplar.id_ejemplar}" name="id_ejemplar"/>
                 <button type="button" onclick="alerta(this)" class="btn btn-outline-danger btn-sm">
                   Eliminar
                 </button>
               </form>
-            </c:if>
-            <c:if test="${not empty ejemplar.ejemplar}">
-              <p class="text-success fw-bold">En uso</p>
             </c:if>
           </td>
         </tr>

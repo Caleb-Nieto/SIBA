@@ -28,7 +28,7 @@ import java.util.List;
 public class ServletEjemplar extends HttpServlet {
     private String action;
     private String redirect;
-    private String id_ejemplar, observaciones, id_libro;
+    private String id_ejemplar, observaciones, id_libro, titulo;
     private BeanLibro libro;
     private String mensaje;
     private BeanEjemplar ejemplar;
@@ -49,15 +49,13 @@ public class ServletEjemplar extends HttpServlet {
                 int inicio = (pagina -1) * limite;
 
                 id_libro = request.getParameter("id_libro");
-                String titulo = request.getParameter("titulo");
-                String isbn = request.getParameter("isbn");
+
+
 
                 ejemplares = new DaoEjemplar().findAll(Long.parseLong(id_libro), inicio, limite);
 
                 request.setAttribute("ejemplares", ejemplares);
-                request.setAttribute("titulo", titulo);
-                request.setAttribute("isbn", isbn);
-                request.setAttribute("id_libro", id_libro);
+
 
                 int totalRegistros = new DaoLibro().count();
                 int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
@@ -70,11 +68,24 @@ public class ServletEjemplar extends HttpServlet {
 
             case "/api/ejemplar/ejemplar-view-save":
 
-                String id_libro = request.getParameter("id_libro");
+                id_libro = request.getParameter("id_libro");
+                titulo = request.getParameter("titulo");
 
                 request.setAttribute("id_libro",id_libro);
+                request.setAttribute("titulo", titulo);
 
-                redirect = "/views/administrador/libros/ejemplares/agregar_ejemplares.jsp";
+                redirect = "/views/administrador/libros/ejemplares/agregar_ejemplar.jsp";
+                break;
+            case "/api/ejemplar/ejemplar-view-update":
+
+                id_ejemplar = request.getParameter("id_ejemplar");
+
+
+                ejemplar = new DaoEjemplar().findOne(Long.parseLong(id_ejemplar));
+
+                request.setAttribute("ejemplar", ejemplar);
+
+                redirect = "/views/administrador/libros/ejemplares/editar_ejemplar.jsp";
                 break;
         }
         request.getRequestDispatcher(redirect).forward(request, response);
@@ -87,43 +98,49 @@ public class ServletEjemplar extends HttpServlet {
         action = request.getServletPath();
         switch (action){
             case "/api/ejemplar/save":
+                id_libro = request.getParameter("id_libro");
                 id_ejemplar = request.getParameter("id_ejemplar");
                 observaciones = request.getParameter("observaciones");
 
+
                 libro=new BeanLibro();//declaro un nuevo libro
 
-                libro.setId(Long.parseLong("id_libro"));
+                libro.setId(Long.parseLong(id_libro));
+
                 ejemplar = new BeanEjemplar(0L,Integer.parseInt(id_ejemplar), observaciones,libro);
                 mensaje = new DaoEjemplar().save(ejemplar);
                 if (mensaje.contains("correctamente")){
-                    redirect = "/ejemplar/ejemplar-view?result=true&message="+ URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/ejemplar/ejemplares?result=true&id_libro="+id_libro+"&message="+ URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }else{
-                    redirect = "/api/ejemplar/ejemplar-view-save?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/ejemplar/ejemplar-view-save?result=false&id_libro="+id_libro+"&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }
                 break;
             case "/api/ejemplar/update":
                 id_ejemplar = request.getParameter("id_ejemplar");
+                String num = request.getParameter("ejemplar");
                 observaciones = request.getParameter("observaciones");
+                id_libro = request.getParameter("id_libro");
 
                 libro=new BeanLibro();
-                libro.setId(Long.parseLong("id_libro"));
+                libro.setId(Long.parseLong(id_libro));
 
-                ejemplar = new BeanEjemplar(0L,Integer.parseInt(id_ejemplar), observaciones,libro);
+                ejemplar = new BeanEjemplar(Long.parseLong(id_ejemplar),Integer.parseInt(num), observaciones,libro);
                 mensaje = new DaoEjemplar().update(ejemplar);
                 if (mensaje.contains("correctamente")){
-                    redirect = "/api/ejemplar/ejemplares?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/ejemplar/ejemplares?result=true&id_libro="+id_libro+"&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }else{
-                    redirect = "/api/ejemplar/ejemplares?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/ejemplar/ejemplares?result=false&id_libro="+id_libro+"&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }
 
                 break;
             case "/api/ejemplar/delete":
                 id_ejemplar = request.getParameter("id_ejemplar");
+
                 mensaje = new DaoEjemplar().delete(Long.parseLong(id_ejemplar));
                 if (mensaje.contains("correctamente")){
-                    redirect = "/api/ejemplar/ejemplares?result=true&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/ejemplar/ejemplares?result=true&id_libro="+id_libro+"&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }else{
-                    redirect = "/api/ejemplar/ejemplares?result=false&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+                    redirect = "/api/ejemplar/ejemplares?result=false&id_libro="+id_libro+"&message="+URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
                 }
                 break;
         }

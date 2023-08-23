@@ -12,12 +12,13 @@
 <div class="container-fluid">
   <div class="col align-middle">
     <div class="card position-absolute top-50 start-50 translate-middle" style="width: 20%">
-      <div class="card-header text-white text-center" style="background: rgb(0, 148, 117)"><h5>REGISTRAR EJEMPLARES</h5></div>
+      <div class="card-header text-white text-center" style="background: rgb(0, 148, 117)"><h5>REGISTRAR EJEMPLARES DE: <c:out value="${titulo}"/></h5></div>
       <div class="card-body">
         <form id="ejemplar-form" class="needs-validation" novalidate action="/api/ejemplar/save" method="post">
+          <input value="${id_libro}" name="id_libro" hidden>
           <div class="form-group mb-3">
-            <label for="ejemplar" class="fw-bold">Ejemplar:</label>
-            <input type="text" name="ejemplar" id="ejemplar" class="form-control" required maxlength="40"/>
+            <label for="ejemplar" class="fw-bold">Identificador de ejemplar:</label>
+            <input type="number" name="id_ejemplar" id="ejemplar" class="form-control" required min="0"/>
             <div class="invalid-feedback">Campo obligatorio</div>
           </div>
           <div class="form-group mb-3">
@@ -32,7 +33,7 @@
           <div class="form-group mb-3">
             <div class="row">
               <div class="col text-center">
-                <a href="/api/ejemplar/ejemplares" class="btn btn-outline-danger mr-2">
+                <a href="/api/ejemplar/ejemplares?id_libro=${id_libro}" class="btn btn-outline-danger mr-2">
                   Cancelar
                 </a>
                 <button id="enviar" type="submit" class="btn btn-success mr-2 " style="background: rgb(0, 148, 117);">Aceptar</button>
