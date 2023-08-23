@@ -589,44 +589,47 @@ END;$$
 
 DELIMITER $$
 CREATE PROCEDURE Insertar_Libro ( _titulo VARCHAR(500), _isbn VARCHAR(500), _editorial VARCHAR(500),
-    _id_ub int, _ejemplar int, _observaciones varchar(500), _autores varchar(100),
-    _file_name varchar(100), _file MEDIUMBLOB, out mensaje varchar(255))
+                                  _id_ub int, _ejemplar int, _observaciones varchar(500), _autores varchar(100),
+                                  _file_name varchar(100), _file MEDIUMBLOB, out mensaje varchar(255))
 BEGIN
     DECLARE _id_libro int;
     DECLARE  _id_autor int;
 
-	DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        ROLLBACK;
-        SET mensaje = 'Error en la transacción';
-    END;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+        BEGIN
+            ROLLBACK;
+            SET mensaje = 'Error en la transacción';
+        END;
     SET autocommit = 0;
     START TRANSACTION;
     SET _id_ub = cast(_id_ub as unsigned);
     case
-		when LENGTH(_isbn) <> 17  AND LENGTH(_isbn) <> 13 then set mensaje = 'El formato del ISBN es incorrecto, contempla dígitos y guiones';
-		ROLLBACK;
+        when LENGTH(_isbn) <> 17  AND LENGTH(_isbn) <> 13 then set mensaje = 'El formato del ISBN es incorrecto, contempla dígitos y guiones';
+                                                               ROLLBACK;
         when EXISTS (SELECT * FROM Libros WHERE isbn = _isbn) THEN set mensaje =  'EL ISBN debe ser único';
-        ROLLBACK;
+                                                                   ROLLBACK;
         when length(_titulo) > 50 or length(_editorial) > 50 then set mensaje = 'El nombre de la editorial o el titulo son demasiado largos';
-		ROLLBACK;
-        when EXISTS(SELECT * FROM ejemplares WHERE ejemplar = _ejemplar) THEN SET mensaje = 'El id del ejemplar no puede repetirse';
-        ROLLBACK;
+                                                                  ROLLBACK;
         else
             INSERT INTO Libros (titulo, isbn, editorial, id_ub) VALUES (_titulo, _isbn, _editorial, _id_ub);
             set _id_libro = last_insert_id();
             IF (_file_name IS NOT NULL) AND (_file IS NOT NULL) THEN
                 INSERT INTO libros_img (id_libro, file_name, file) values (_id_libro, _file_name, _file);
             END IF;
-            INSERT INTO ejemplares(ejemplar, observaciones, id_libro) values (_ejemplar, _observaciones, _id_libro);
+            IF EXISTS(SELECT * FROM ejemplares WHERE ejemplar = _ejemplar and id_libro = _id_libro) THEN
+                SET mensaje = 'El id del ejemplar no puede repetirse';
+                rollback;
+            else
+                INSERT INTO ejemplares(ejemplar, observaciones, id_libro) values (_ejemplar, _observaciones, _id_libro);
+            end if;
             WHILE LENGTH(_autores) > 0 DO
-                SET _id_autor = SUBSTRING_INDEX(_autores, ',', 1);
-                INSERT INTO libros_autores(id_libro, id_autor) VALUES (_id_libro, _id_autor);
-                SET _autores = SUBSTRING(_autores, LENGTH(_id_autor) + 2);
-            END WHILE;
-                set mensaje = 'El libro se ha insertado correctamente';
-				COMMIT;
-    end case;
+                    SET _id_autor = SUBSTRING_INDEX(_autores, ',', 1);
+                    INSERT INTO libros_autores(id_libro, id_autor) VALUES (_id_libro, _id_autor);
+                    SET _autores = SUBSTRING(_autores, LENGTH(_id_autor) + 2);
+                END WHILE;
+            set mensaje = 'El libro se ha insertado correctamente';
+            COMMIT;
+        end case;
     SET autocommit = 1;
 END;$$
 
@@ -1409,3 +1412,79 @@ begin
     set autocommit = 0;
 end; $$
 
+delimiter $$
+create procedure iniciar_prestamo_ejemplar(_id_ejemplar int, ma_nt varchar(100), out mensaje varchar(200))
+begin
+    declare _id_usuario int;
+    declare entrega date;
+    declare libro int;
+
+    select id_libro into libro from ejemplares where id_ejemplar = _id_ejemplar;
+
+
+    set autocommit = 0;
+    start transaction;
+
+    IF EXISTS(select * from usuarios u INNER JOIN docentes d on u.id_usuario=d.id_usuario where no_trabajador = ma_nt) then
+        select u.id_usuario into _id_usuario from usuarios u INNER JOIN docentes d on u.id_usuario=d.id_usuario where no_trabajador = ma_nt;
+
+        if exists(select * from prestamos_libros where id_ejemplar = _id_ejemplar and estatus = 'Activo') then
+
+            SET mensaje = 'Este ejemplar ya esta prestado: ';
+
+        elseif exists(select * from prestamos_libros inner join ejemplares e on prestamos_libros.id_ejemplar = e.id_ejemplar where id_libro = libro and estatus = 'Activo' and id_usuario = _id_usuario) then
+            SET mensaje = concat('Ya se le presto un ejemplar de este libro al docente con número de trabajador: ', ma_nt);
+        elseif (select count(*) from prestamos_libros where id_usuario = _id_usuario and estatus = 'Activo') = 5 then
+            SET mensaje = concat('El docente con número de trabajador: ', ma_nt,', ha alcanzado el número máximo de ejemplares que se le pueden prestar: ');
+        else
+            insert into prestamos_libros(id_ejemplar, id_usuario, fecha_inicio, fecha_devolucion, estatus) VALUES
+                (_id_ejemplar, _id_usuario, now(), DATE_ADD(
+                        NOW(),
+                        INTERVAL 3 +
+                                 (CASE
+                                      WHEN DAYOFWEEK(NOW()) = 5 THEN 5 -- Viernes: agregar 5 días (3 hábiles + 2 de fin de semana)
+                                      WHEN DAYOFWEEK(NOW()) = 6 THEN 4 -- Sábado: agregar 4 días (3 hábiles + 1 de fin de semana)
+                                      ELSE 3 -- Cualquier otro día: agregar 3 días hábiles
+                                     END) DAY
+                    ), 'Activo');
+
+
+            select fecha_devolucion into entrega from prestamos_libros where id_prestamo_libro = LAST_INSERT_ID();
+
+            SET mensaje = concat('Prestamo realizado correctamente al docente con número de trabajador: ', ma_nt, '. Fecha de entrega: ',entrega);
+        end if;
+
+
+    ELSEIF EXISTS(select * from usuarios u INNER JOIN alumnos a on u.id_usuario=a.id_usuario where matricula = ma_nt) then
+        select u.id_usuario into _id_usuario from usuarios u INNER JOIN alumnos a on u.id_usuario=a.id_usuario where matricula = ma_nt;
+
+        if exists(select * from prestamos_libros where id_ejemplar = _id_ejemplar and estatus = 'Activo') then
+
+            SET mensaje = 'Este ejemplar ya esta prestado: ';
+
+        elseif exists(select * from prestamos_libros inner join ejemplares e on prestamos_libros.id_ejemplar = e.id_ejemplar where id_libro = libro and estatus = 'Activo' and id_usuario = _id_usuario) then
+            SET mensaje = concat('Ya se le presto un ejemplar de este libro al alumno con matrícula: ', ma_nt);
+        elseif (select count(*) from prestamos_libros where id_usuario = _id_usuario and estatus = 'Activo') = 3 then
+            SET mensaje = concat('El alumno con matrícula: ', ma_nt,', ha alcanzado el número máximo de ejemplares que se le pueden prestar: ');
+        else
+            insert into prestamos_libros(id_ejemplar, id_usuario, fecha_inicio, fecha_devolucion, estatus) VALUES
+                (_id_ejemplar, _id_usuario, now(), DATE_ADD(
+                        NOW(),
+                        INTERVAL 3 +
+                                 (CASE
+                                      WHEN DAYOFWEEK(NOW()) = 5 THEN 5 -- Viernes: agregar 5 días (3 hábiles + 2 de fin de semana)
+                                      WHEN DAYOFWEEK(NOW()) = 6 THEN 4 -- Sábado: agregar 4 días (3 hábiles + 1 de fin de semana)
+                                      ELSE 3 -- Cualquier otro día: agregar 3 días hábiles
+                                     END) DAY
+                    ), 'Activo');
+
+            select fecha_devolucion into entrega from prestamos_libros where id_prestamo_libro = LAST_INSERT_ID();
+
+            SET mensaje = concat('Prestamo realizado correctamente al alumno con matrícula: ', ma_nt, '. Fecha de entrega: ',entrega);
+        end if;
+
+    ELSE
+        SET mensaje = concat('La matrícula o número de trabajador: ', ma_nt, ', no esta registrada o esta mal escrita');
+    end if;
+    set autocommit = 1;
+end;$$
